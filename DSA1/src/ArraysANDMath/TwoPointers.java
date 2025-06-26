@@ -5,9 +5,56 @@ import java.util.Stack;
 
 public class TwoPointers {
 	public static void main(String[] args) {
-		int[] nums = {1,2,4,3};
-		int indexes = maxArea(nums);
-		System.out.println(indexes);
+		int[] nums = {-4,-1,0,3,10};
+		int[] squares = sortedSquares(nums);
+		for (int s : squares) {
+			System.out.print(s + " ");
+		}
+		System.out.println();
+		String s = "ab#c", t = "ad#c";
+		System.out.println(cleanedString(s));
+		System.out.println(backspaceCompare(s, t));
+	}
+	
+	public static int[] sortedSquares(int[] nums) {
+		int[] squares = new int[nums.length];
+		int sq = nums.length-1;
+		int left = 0;
+		int right = nums.length-1;
+		while (left <= right) {
+			int leftsq = (int) Math.pow(nums[left],2);
+			int rightsq = (int) Math.pow(nums[right],2);
+			if (leftsq > rightsq) {
+				squares[sq] = leftsq;
+				left++;
+			} else {
+				squares[sq] = rightsq;
+				right--;
+			}
+			sq--;
+		}
+		return squares;
+	}
+	
+	public static boolean backspaceCompare(String s, String t) {
+		return cleanedString(s).equals(cleanedString(t));
+	}
+	
+	public static String cleanedString(String s) {
+		StringBuilder str = new StringBuilder();
+		int check = 0;
+		for (int i = s.length()-1; i >= 0; i--) {
+			char c = s.charAt(i);
+			if (c == '#') {
+				check++;
+				continue;
+			}
+			if (check > 0) {
+				check--;
+			} else
+				str.append(c);
+		}
+		return str.toString();
 	}
 	
 	public static int maxArea(int[] height) {
