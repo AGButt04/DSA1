@@ -5,12 +5,88 @@ import java.util.HashMap;
 public class PrefixSum {
 
 	public static void main(String[] args) {
-		int[] nums = {1, 2, 3, 4, 5};
-		NumArray(nums);
-		for (int n : array) {
+		int[] nums = {0,1,1,1,1,1,0,0,0};
+		int[] answer = (nums);
+		for (int n : answer) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
+		System.out.println(findMaxLength(nums));
+	}
+	
+	public static int findMaxLength(int[] nums) {
+	   // HashMap to store first occurrence of each prefix sum
+	   // Key: prefix sum value, Value: index where first seen
+	   HashMap<Integer, Integer> map = new HashMap<>();
+	   
+	   // Initialize with sum 0 at imaginary index -1
+	   // Handles case when entire sub-array from start has equal 0s and 1s
+	   map.put(0, -1);
+	   
+	   // Transform 0s to -1s so equal 0s and 1s will sum to 0
+	   // This converts the problem to "find longest sub-array with sum = 0"
+	   for (int i = 0; i < nums.length; i++) {
+	       if (nums[i] == 0) nums[i] = -1;
+	   }
+	   
+	   int maxLength = 0;
+	   int prefixSum = 0;
+	   
+	   // Build prefix sum and check for equal sums (indicating balanced sub-array)
+	   for (int i = 0; i < nums.length; i++) {
+	       prefixSum += nums[i];
+	       
+	       if (map.containsKey(prefixSum)) {
+	           // Found same prefix sum before - sub-array between has sum = 0
+	           // Length = current_index - first_occurrence_index
+	           int length = i - map.get(prefixSum);
+	           maxLength = Math.max(maxLength, length);
+	       } else {
+	           // First time seeing this prefix sum - store current index
+	           // We only store first occurrence to maximize sub-array length
+	           map.put(prefixSum, i);
+	       }
+	   }
+	   
+	   return maxLength;
+	}
+	
+	public static int[] runningSum(int[] nums) {
+		for (int i = 1; i < nums.length; i++) {
+			nums[i] += nums[i-1];
+		}
+		return nums;
+	}
+	
+	public static int[] productExceptSelf(int[] nums) {
+	   int len = nums.length;
+	   int[] left = new int[len];   // Store products of all elements to the left
+	   int[] right = new int[len];  // Store products of all elements to the right
+	   int[] answer = new int[len]; // Final result array
+	   
+	   // Base cases: no elements to the left of index 0, no elements to the right of last index
+	   left[0] = 1;
+	   right[len-1] = 1;
+	   
+	   // Build left products array (left to right)
+	   // left[i] = product of all elements to the left of index i
+	   for (int i = 1; i < len; i++) {
+	       left[i] = left[i-1] * nums[i-1];
+	   }
+	   
+	   // Build right products array (right to left)  
+	   // right[i] = product of all elements to the right of index i
+	   for (int i = len-2; i >= 0; i--) {
+	       right[i] = right[i+1] * nums[i+1];
+	   }
+	   
+	   // Combine left and right products for final answer
+	   // answer[i] = (product of left elements) * (product of right elements)
+	   for (int i = 0; i < len; i++) {
+	       answer[i] = left[i] * right[i];
+	   }
+	   
+	   return answer;
 	}
 	
 	static int[] array;
