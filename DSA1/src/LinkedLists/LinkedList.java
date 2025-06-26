@@ -1,5 +1,8 @@
 package LinkedLists;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Stack;
 
 public class LinkedList {
 	public static void main(String[] args) {
@@ -16,11 +19,17 @@ public class LinkedList {
 		four.next = five; //five.random = four;
 		five.next = six; //tail.random = five;
 		six.next = tail;
-		Node head1 = rotateRight(head, 2);
-		Node walker = head1;
+		Node walker = head;
 		while (walker != null) {
 			System.out.print(walker.val + "|");
 			walker = walker.next;
+		}
+		System.out.println();
+		Node head1 = swapPairs(head);
+		Node walk = head1;
+		while (walk != null) {
+			System.out.print(walk.val + "|");
+			walk = walk.next;
 		}
 		
 		
@@ -36,6 +45,28 @@ public class LinkedList {
 	        this.next = null;
 	        this.random = null;
 	    }
+	}
+	
+	public static Node swapPairs(Node head) {
+		if (head == null || head.next == null)
+			return head;
+		
+		Node dummy = new Node(0);
+		dummy.next = head;
+		Node prev = dummy;
+		while (prev != null && prev.next.next != null) {
+			Node curr1 = prev.next;
+			Node curr2 = curr1.next;
+			
+			Node ahead = curr2.next;
+			prev.next = curr2;
+			curr2.next = curr1;
+			curr1.next = ahead;
+			
+			prev = curr1;
+		}
+		
+		return dummy.next;
 	}
 	
 	public static Node partitionList(Node head, int x) {
@@ -188,6 +219,30 @@ public class LinkedList {
 		return walker;
 	}
 	
+	public boolean isPalindrome(Node head) {
+        if (head == null || head.next == null) return true;
+
+        Node slow = head;
+        Node fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        Node rightHalf = reverseList(slow);
+
+        Node p1 = head;
+        Node p2 = rightHalf;
+        while (p2 != null) {
+            if (p1.val != p2.val) {
+                return false;
+            }
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+        return true;
+    }
+	
 	public static Node reverseList(Node head) {
 		Node walker = head;
 		Node prev = null;
@@ -219,6 +274,7 @@ public class LinkedList {
 		}
 		return map.get(head);
 	}
+	
 	public static Node copyList(Node head) {
 		Node newHead = new Node(head.val);
 		Node newCopy = newHead;

@@ -1,24 +1,127 @@
 package Recursion;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
+
+import LinkedLists.LinkedList.Node;
 
 public class Recursion {
 
 	public static void main(String[] args) {
-		String str = "drab bard";
-		System.out.println(isPalindrome(str));
-		int[] array = {13, 25, 28, 30, 39, 43, 44, 58, 66, 70, 78, 81, 86, 88, 95};
-		printReverse(array, 0);
+		int[] array = {1,2,3,4};
+//		HashSet<Integer> arr = totalNumbers(array);
+//		for (int i : arr) {
+//			System.out.print(i + " ");
+//		}
+//		System.out.println();
+//		System.out.println(arr.size());
+		
+		
+		Node head = new Node(11);
+		Node two = new Node(22);
+		Node three = new Node(33);
+		Node four = new Node(44);
+		Node five = new Node(55);
+		Node six = new Node(66);
+		Node tail = new Node(77);
+		head.next = two; //two.random = head;
+		two.next = three; //three.random = two;
+		three.next = four; //four.random = three;
+		four.next = five; //five.random = four;
+		five.next = six; //tail.random = five;
+		six.next = tail;
+		Node walk = head;
+		while (walk != null) {
+			System.out.print(walk.val + "|");
+			walk = walk.next;
+		}
 		System.out.println();
-		System.out.println(Factorial(5));
-		System.out.println(Fibonacci(5));
-		int[] arr = {26,  18,  48,  77,  30,  42,  23,  69,  33};
-		String st = "abc";
-		quickSort(arr);
-		for (int i : arr) {
-			System.out.print(i + " ");
+		Node walker = swapPairs(head);
+		while (walker != null) {
+			System.out.print(walker.val + "|");
+			walker = walker.next;
 		}
 	}
+	
+	public static class Node {
+	    int val;
+	    Node next;
+	    Node random;
 
+	    public Node(int val) {
+	        this.val = val;
+	        this.next = null;
+	        this.random = null;
+	    }
+	}
+	
+	public static char kthCharacter(int k) {
+		String word = "a";
+		while (word.length() < k) {
+			String next = "";
+			for (int i = 0; i < word.length(); i++) {
+				char c = word.charAt(i);
+				char n = (char) ((c == 'z') ? 'a' : (c + 1));
+				next += n;
+			}
+			word += next;
+		}
+		return word.charAt(k-1);
+	}
+    
+	public static HashSet<Integer> totalNumbers(int[] digits) {
+		//Generate all possible 3-digit combinations of digits array.
+		HashSet<Integer> combos = new HashSet<>();
+		int len = digits.length;
+		for (int i = 0; i < len; i++) {
+			if (digits[i] == 0) continue;
+			for (int j = 0; j < len; j++) {
+				if (j == i) continue;
+				for (int k = 0; k < len; k++) {
+					if (k != j && k != i) {
+						if(digits[k] % 2 == 0) {
+							int num = digits[i] * 100 + digits[j] * 10 + digits[k];
+							combos.add(num);
+						}
+					}
+				}
+			}
+		}
+		return combos;
+	}
+	
+	public static boolean isPowerOfTwo(int n) {
+		if (n == 1)
+			return true;
+		if (n == 0 || n % 2 != 0)
+			return false;
+		
+		return isPowerOfTwo(n/2);
+		
+	}
+	
+	public static Node swapPairs(Node head) {
+		if (head == null || head.next == null)
+			return head;
+	
+		Node ahead = head.next;
+		head.next = swapPairs(ahead.next);
+		ahead.next = head;
+		
+		return ahead;
+	}
+	
+	public static Node reverseList(Node head) {
+		if (head == null || head.next == null)
+			return head;
+		
+		Node newHead = reverseList(head.next);
+		head.next.next = head;
+		head.next = null;
+		
+		return newHead;
+	}
+	
 	public static int partition(int[] array, int start, int end) {
 		int pivot = end;
 		int pivotIndex = start-1;
