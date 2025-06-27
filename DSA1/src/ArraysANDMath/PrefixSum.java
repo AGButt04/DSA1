@@ -5,13 +5,83 @@ import java.util.HashMap;
 public class PrefixSum {
 
 	public static void main(String[] args) {
-		int[] nums = {0,1,1,1,1,1,0,0,0};
+		int[] nums = {9,9,6,0,6,6,6};
 		int[] answer = (nums);
 		for (int n : answer) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
-		System.out.println(findMaxLength(nums));
+		System.out.println(longestWPI(nums));
+	}
+	
+	public static int longestWPI(int[] hours) {
+		// HashMap to store the prefix sums and their first occurrence.
+		HashMap<Integer, Integer> map = new HashMap<>();
+		map.put(0, -1);
+		//Edge case as 0 prefix exists at -1 index;
+		
+		int prefix = 0;
+		int max = 0;
+		for (int i = 0; i < hours.length; i++) {
+			// We add +1 for value > 8 and -1 for value < 8 to prefix
+			if (hours[i] > 8)
+				prefix += 1;
+			else
+				prefix += -1;
+			
+			/*
+			 * If the prefix > 0 (meaning more tiring days) then we know the
+			 * length is i + 1. Then we check if our map does not contain that value.
+			 * If not we add it, then last condition is the trick, we look to see that if our map
+			 * contains (prefix-1), something smaller because if it does, then the sub-array between 
+			 * those two indexes are bound to have positive sum as our current prefix is greate.
+			 */
+			
+			if (prefix > 0)
+				max = i + 1;
+			else if (!map.containsKey(prefix))
+				map.put(prefix, i);
+			
+			if (map.containsKey(prefix - 1)) {
+				int curr = i - (map.get(prefix-1));
+				max = Math.max(max, curr);
+			}
+		}
+		
+		return max;
+	}
+	
+	public static int numberOfSubarray(int[] nums, int k) {
+		// HashMap to store the the count of each prefix sum
+		// Key: prefix sum value, Value: number of times seen
+		HashMap<Integer, Integer> map = new HashMap<>();
+		
+		// Initialize the map with the edge case
+		map.put(0, 1); 
+		// As prefix sum value of 0 always occurs
+		
+		// Change odd values ->> 1 || Even values to ->> 0
+		for (int i = 0; i < nums.length; i++) {
+			if (nums[i] % 2 == 0)
+				nums[i] = 0;
+			else
+				nums[i] = 1;
+		}
+		
+		// Check if prefix value - k exists in the HashMap
+		int prefix = 0, count = 0;
+		for (int i = 0; i < nums.length; i++) {
+			prefix += nums[i];
+			int check = prefix - k;
+			if (map.containsKey(check)) {
+				count += map.get(check);
+			}
+			
+			map.put(prefix, map.getOrDefault(prefix, 0) + 1);
+		}
+		
+		return count;
+	
 	}
 	
 	public static int findMaxLength(int[] nums) {
