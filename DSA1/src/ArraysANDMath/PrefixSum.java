@@ -5,13 +5,65 @@ import java.util.HashMap;
 public class PrefixSum {
 
 	public static void main(String[] args) {
-		int[] nums = {9,9,6,0,6,6,6};
+		int[] nums = {-1,2,9};
 		int[] answer = (nums);
 		for (int n : answer) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
-		System.out.println(longestWPI(nums));
+		System.out.println(subarraysDivByK(nums, 2));
+	}
+	
+	public static int subarraysDivByK(int[] nums, int k) {
+		// HashMap to store the remainder that occurs and their counts.
+		HashMap<Integer, Integer> map = new HashMap<>();
+		map.put(0, 1);
+		// Edge case as zero remainder exists
+		
+		int count = 0;
+		int prefix = 0;
+		for (int i = 0; i < nums.length; i++) {
+			prefix += nums[i];
+			int rem = ((prefix % k) + k) % k;
+			/*
+			 * We should check if our remainder exists in map, if it
+			 * does then we can increment the count by the count of that
+			 * remainder.
+			 */
+			if (map.containsKey(rem))
+				count += map.get(rem);
+			
+			// Updating the the count of the remainder
+			map.put(rem, map.getOrDefault(rem, 0) + 1);
+		}
+		
+		return count;
+	}
+	
+	public static int numSubarrayswithSum(int[] nums, int goal) {
+		// HashMap to store the prefix sum and count of its occurrence
+		HashMap<Integer, Integer> map = new HashMap<>();
+		map.put(0, 1);
+		// Edge case as zero prefix sum always exists
+		
+		int max = 0;
+		int prefix = 0;
+		for (int i = 0; i < nums.length; i++) {
+			prefix += nums[i];
+			/*
+			 * We will see if the prefix-goal exists in the HashMap then 
+			 * we will increment the max with the value of that calculation.
+			 * The idea is if the current number at current index exists, and 
+			 * current number - goal also exists in the map meaning can be made then we know our goal exists.
+			 */
+			if (map.containsKey(prefix-goal))
+				max += map.get(prefix-goal);
+			
+			// Update the prefix's value if exists again.
+			map.put(prefix, map.getOrDefault(prefix, 0) + 1);
+		}
+		
+		return max;
 	}
 	
 	public static int longestWPI(int[] hours) {
