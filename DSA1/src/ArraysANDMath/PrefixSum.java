@@ -5,13 +5,88 @@ import java.util.HashMap;
 public class PrefixSum {
 
 	public static void main(String[] args) {
-		int[] nums = {-1,2,9};
+		int[] nums = {23, 2, 6, 4, 7};
 		int[] answer = (nums);
 		for (int n : answer) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
-		System.out.println(subarraysDivByK(nums, 2));
+		System.out.println(checkSubarraySum(nums, 6));
+	}
+	
+	public static boolean checkSubarraySum(int[] nums, int k) {
+		// HashMap to store the remainder and the index where it first occurred
+		HashMap<Integer, Integer> map = new HashMap<>();
+		map.put(0, -1); // Edge case as sum of zero exists at -1 index, meaning if prefixSum == k
+		
+		int prefix = 0;
+		for (int i = 0; i < nums.length; i++) {
+			/*
+			 * We have to check if our remainder exists in HashMap. If it does, 
+			 * that means the sub-array between the index of that rem and current
+			 * is divisible by 6. Now we have to check if their length is >= 2.
+			 * If yes, then we can return true.
+			 */
+			prefix += nums[i];
+			int rem = prefix % k;
+			if (rem < 0)
+				rem += k;
+			if (map.containsKey(rem)) {
+				int len = i - map.get(rem);
+				if (len >= 2)
+					return true;
+			} else
+				map.put(rem, i);
+		}
+		
+		return false;
+	}
+	
+	private static int count = 0;
+	
+	public static void PathSumDFS(TreeNode root, HashMap<Integer, Integer> map, int prefix, int target) {
+		if (root == null) return;
+		
+		/* 
+		 * Check if prefix - target exists in our HashMap. If yes,
+		 * then increment the count as target can be reached.
+		 */
+		prefix += root.val;
+		if (map.containsKey(prefix - target)) {
+			count += map.get(prefix - target);
+		}
+		
+		// Have to put prefix in our map, and its count
+		map.put(prefix, map.getOrDefault(prefix, 0) + 1);
+		
+		// Two recursive calls to explore left and right sub-trees
+		PathSumDFS(root.left, map, prefix, target);
+		PathSumDFS(root.right, map, prefix, target);
+		
+		/*
+		 * After that, we have to backtrack and leave the situation as it was,
+		 * by decrementing the prefix frequency and potentially removing the new prefix.
+		 * Then have to update the prefix by subtracting the current node's value.
+		 */
+		map.put(prefix, map.get(prefix) - 1);
+		if (map.get(prefix) == 0)
+			map.remove(prefix);
+		
+		prefix -= root.val;
+	}
+	
+	public static int pathSum(TreeNode root, int targetSum) {
+		/*
+		 * Initialize everything: HashMap to keep count of prefixes and
+		 * prefix starting from zero. Have to initialize the map with {0 : 1}.
+		 * The method call will update the class variable count and returns.
+		 */
+		int prefix = 0;
+		count = 0;
+		HashMap<Integer, Integer> map = new HashMap<>();
+		map.put(0, 1);
+		PathSumDFS(root, map, prefix, targetSum);
+		return count;
 	}
 	
 	public static int subarraysDivByK(int[] nums, int k) {
@@ -260,6 +335,19 @@ public class PrefixSum {
 		}
 		
 		return count;
+	}
+	
+	public class TreeNode {
+		 int val;
+		 TreeNode left;
+		 TreeNode right;
+		 TreeNode() {}
+		 TreeNode(int val) { this.val = val; }
+		 TreeNode(int val, TreeNode left, TreeNode right) {
+			 this.val = val;
+			 this.left = left;
+			 this.right = right;
+		 }
 	}
 
 }
