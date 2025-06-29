@@ -1,19 +1,95 @@
 package ArraysANDMath;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 
 public class TwoPointers {
 	public static void main(String[] args) {
-		int[] nums = {-4,-1,0,3,10};
-		int[] squares = sortedSquares(nums);
-		for (int s : squares) {
-			System.out.print(s + " ");
+		int[] nums = {-1,0,1,2,-1,-4};
+		List<List<Integer>> n = ThreeSum(nums);
+		for (List<Integer> list : n) {
+			System.out.print(list);
 		}
 		System.out.println();
-		String s = "ab#c", t = "ad#c";
-		System.out.println(cleanedString(s));
-		System.out.println(backspaceCompare(s, t));
+	}
+	
+	public static List<List<Integer>> ThreeSum(int[] nums) {
+		/*
+		 * Leet-code 15
+		 */
+		if (nums.length < 3)
+			return new ArrayList<>();
+		List<List<Integer>> triples = new ArrayList<>();
+		Arrays.sort(nums); //Sort the array to avoid duplicates
+		for (int i = 0; i < nums.length; i++) {
+			// Check if nums[i] and nums[i-1] are duplicates, skip if yes
+			if (i > 0 && nums[i] == nums[i-1])
+				continue;
+			int left = i+1;
+			int right = nums.length-1;
+			// inner loop to check all possible triplets
+			while (left < right) {
+				int check = nums[i] + nums[left] + nums[right];
+				if (check == 0) {
+					List<Integer> triple = Arrays.asList(nums[i], nums[left], nums[right]);
+					triples.add(triple);
+					/*
+					 * When we have found the valid triplet, we add it and then check
+					 * if there are any duplicates and skip them using two while loops
+					 */
+					while(left < right && nums[left] == nums[left+1]) left++;
+					while (left < right && nums[right] == nums[right-1]) right--;
+					left++; right--;
+				} else if (check < 0) {
+					left++;
+				} else {
+					right--;
+				}
+			}
+		}
+		return triples;
+	}
+	
+	public static int maxArea(int[] height) {
+		/*
+		 * Leet-code 11
+		 */
+		int left = 0;
+		int right = height.length-1;
+		int max = 0;
+		while (left < right) {
+			int h = Math.min(height[left], height[right]);
+			int w = right - left;
+			int area = h * w;
+			if (max < area)
+				max = area;
+			if (height[left] < height[right])
+				left++;
+			else
+				right--;
+		}
+		
+		return max;
+	}
+	
+	public static int[] twoSum(int[] numbers, int target) {
+		/*
+		 * Leet-code 167
+		 */
+		int left = 0;
+		int right = numbers.length-1;
+		while (left < right) {
+			int sum = numbers[left] + numbers[right];
+			if (sum == target)
+				return new int[]{left+1,right+1};
+			else if (sum < target)
+				left++;
+			else
+				right--;
+		}
+		return new int[]{};
 	}
 	
 	public static int[] sortedSquares(int[] nums) {
@@ -57,40 +133,6 @@ public class TwoPointers {
 		return str.toString();
 	}
 	
-	public static int maxArea(int[] height) {
-		int area = 0;
-		int left = 0;
-		int right = height.length-1;
-		while (left < right) {
-			int cal = 0;
-			if (height[left] >= height[right]) {
-				cal =  height[right] * (right-left);
-				right--;
-			} else {
-				cal =  height[left] * (right-left);
-				left++;
-			}
-			if (area < cal)
-				area = cal;
-		}
-		return area;
-	}
-	
-	public static int[] TwoSum(int[] numbers, int target) {
-		int left = 0;
-		int right = numbers.length-1;
-		while (right > left) {
-			int sum = numbers[left] + numbers[right];
-			if (sum == target)
-				return new int[]{left+1,right+1};
-			else if (sum > target)
-				right--;
-			else
-				left++;
-		}
-		return new int[]{};
-		
-	}
 	public static HashMap romanNums() {
 		HashMap<Character, Integer> romans = new HashMap<>();
 		romans.put('I', 1);romans.put('V', 5);romans.put('X', 10);romans.put('L', 50);
@@ -220,6 +262,36 @@ public class TwoPointers {
 		return profit;
 	}
 	
+	public List<List<Integer>> threeSum(int[] nums) {
+		List<List<Integer>> triples = new ArrayList<>();
+	    Arrays.sort(nums);
+	    for (int i = 0; i < nums.length; i++) {
+	        if (i > 0 && nums[i] == nums[i-1])
+	            continue;
+	        if (nums.length < 3)
+	            return new ArrayList<>();
+	        if (nums[i] > 0)
+	            break;
+	        int left = i+1;
+	        int right = nums.length-1;
+	        int target = -nums[i];
+	        while (left < right) {
+	            int sum = nums[left] + nums[right];
+	            if (sum == target) {
+	                triples.add(Arrays.asList(nums[i], nums[left], nums[right]));
+	                while (left < right && nums[left] == nums[left + 1]) {left++;}
+	                while (left < right && nums[right] == nums[right - 1]) {right--;}
+	                left++;
+	                right--;}
+	            else if (sum < target)
+	                left++;
+	            else
+	                right--;
+	        }
+	    }
+	    return triples;
+	}
+
 	public static int maxProfit(int[] nums) {
 		int buy = 0;
 		for (int i = 0; i < nums.length; i++) {
