@@ -7,12 +7,48 @@ import java.util.Stack;
 
 public class TwoPointers {
 	public static void main(String[] args) {
-		int[] nums = {-1,0,1,2,-1,-4};
-		List<List<Integer>> n = ThreeSum(nums);
-		for (List<Integer> list : n) {
-			System.out.print(list);
+		int[] nums = {1,1,2};
+		for (int n : nums) {
+			System.out.print(n + " ");
 		}
 		System.out.println();
+		System.out.println(removeDups(nums));
+	}
+	
+	public static int removeDups(int[] nums) {
+		/*
+		 * Leet-code 23
+		 */
+		int slow = 0;
+		int fast = 0;
+		while (fast < nums.length) {
+			if (nums[slow] == nums[fast])
+				fast++;
+			else {
+				slow++;
+				nums[slow] = nums[fast];
+				fast++;
+			}
+		}
+		return slow + 1;
+	}
+	
+	public static void moveZeros(int[] nums) {
+		/*
+		 * Leet-code 283
+		 */
+		int slow = 0;
+		int fast = 0;
+		while (fast < nums.length) {
+			if (nums[fast] != 0) {
+				int temp = nums[slow];
+				nums[slow] = nums[fast];
+				nums[fast] = temp;
+				fast++; slow++;
+			} else {
+				fast++;
+			}
+		}
 	}
 	
 	public static List<List<Integer>> ThreeSum(int[] nums) {
@@ -222,18 +258,6 @@ public class TwoPointers {
 		String[] str = s.split(" ");
 		int len = str[str.length-1].length();
 		return len;
-	}
-	
-	public static void moveZeros(int[] nums) {
-		int index = 0;
-		for (int i = 0; i < nums.length; i++) {
-			if (nums[i] != 0) {
-				int temp = nums[i];
-				nums[i] = nums[index];
-				nums[index] = temp;
-				index++;
-			}
-		}
 	}
 	
 	public static int minimum(int[] nums) {
