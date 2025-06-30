@@ -196,19 +196,6 @@ public class ArrayProblems {
 		return "/" + String.join("/", stack);
 	}
 	
-	public static int[] removeDuplicates(int[] nums) {
-		int index = 1;
-		for (int i = 1; i < nums.length; i++) {
-			if (nums[i] != nums[i-1]) {
-				nums[index] = nums[i];
-				index++;
-			} else {
-				nums[index] = 0;
-			}
-		}
-		return nums;
-	}
-	
 	public static List<List<Integer>> Triples() {
 		List<List<Integer>> triples = new ArrayList<>();
 		int[] nums = {-1,0,1,2,-1,-4};
