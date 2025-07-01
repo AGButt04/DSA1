@@ -7,12 +7,52 @@ import java.util.Stack;
 
 public class TwoPointers {
 	public static void main(String[] args) {
-		int[] nums = {1,1,2};
+		int[] nums = {0,1,0,2,1,0,1,3,2,1,2,1};
 		for (int n : nums) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
-		System.out.println(removeDups(nums));
+		System.out.println(trap(nums));
+	}
+	
+	public static int trap(int[] height) {
+		/*
+		 * Leet-code 42 (Hard)
+		 * We could use two pointers for this which will keep
+		 * track of max values from left side and right side and 
+		 * left and right indexes.
+		 */
+		int left = 0, right = height.length-1;
+		int leftmax = 0, rightmax = 0, water = 0;
+		while (left < right) {
+			/*
+			 * We have to update the left-max and right-max at the
+			 * beginning of the loop to do correct calculations.
+			 */
+			if (height[left] > leftmax)
+				leftmax = height[left];
+			if (height[right] > rightmax)
+				rightmax = height[right];
+			/*
+			 * Then we check which side is smaller and calculate the water
+			 * in between left and right max values and move the smaller pointer
+			 * as it will try to find a bigger value to decrease a limiting factor.
+			 */
+			if (height[left] < height[right]) {
+				int check = Math.min(rightmax, leftmax) - height[left];
+				if (check >= 0)
+					water += check;
+				left++;
+			}
+			else {
+				int check = Math.min(rightmax, leftmax) - height[right];
+				if (check >= 0)
+					water += check;
+				right--;
+			}
+		}
+		
+		return water;
 	}
 	
 	public static int removeDups(int[] nums) {
