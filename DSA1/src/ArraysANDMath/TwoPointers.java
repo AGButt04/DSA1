@@ -7,12 +7,85 @@ import java.util.Stack;
 
 public class TwoPointers {
 	public static void main(String[] args) {
-		int[] nums = {0,1,0,2,1,0,1,3,2,1,2,1};
-		for (int n : nums) {
+		int[] nums = {-1,2,1,-4};
+		int[] sqs = sortedSqs(nums);
+		for (int n : sqs) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
-		System.out.println(trap(nums));
+		 String s = "ab#c", t = "ad#c";
+		 System.out.println(bs_compare(s,t));
+		 System.out.println(threeSum(nums, 1));
+	}
+	
+	public static int threeSum(int[] nums, int target) {
+		Arrays.sort(nums);
+		int closest = nums[0] + nums[1] + nums[2];
+		for (int i = 0; i < nums.length-1; i++) {
+			int left = i+1;
+			int right = nums.length-1;
+			while (left < right) {
+				int sum = nums[i] + nums[left] + nums[right];
+				int check = Math.abs(sum - target);
+				if (sum == target)
+					return sum;
+				else if (sum < target)
+					left++;
+				else
+					right--;
+				
+				if (Math.abs(closest - target) > check)
+					closest = sum;
+			}
+		}
+		
+		return closest;
+	}
+	
+	public static boolean bs_compare(String s, String t) {
+		return backSpace(s).equals(backSpace(t));
+	}
+	
+	public static String backSpace(String s) {
+		StringBuilder str = new StringBuilder();
+		int backspaceCount = 0;
+		for (int i = s.length()-1; i >= 0; i--) {
+			char c = s.charAt(i);
+			
+			if (c == '#') {
+				backspaceCount++;
+			} else {
+				if (backspaceCount > 0) {
+					backspaceCount--;
+				} else {
+					str.append(c);
+				}
+			}
+		}
+		return str.reverse().toString();
+	}
+	
+	public static int[] sortedSqs(int[] nums) {
+		/*
+		 * Leet-code 977
+		 */
+		int[] squares = new int[nums.length];
+		int left = 0, last = nums.length-1;
+		int right = last;
+		int index = last;
+		while (left <= right) {
+			int leftsq = (int) Math.pow(nums[left], 2);
+			int rightsq = (int) Math.pow(nums[right], 2);
+			if (leftsq > rightsq) {
+				squares[index] = leftsq;
+				left++;
+			} else {
+				squares[index] = rightsq;
+				right--;
+			}
+			index--;
+		}
+		return squares;
 	}
 	
 	public static int trap(int[] height) {
@@ -166,26 +239,6 @@ public class TwoPointers {
 				right--;
 		}
 		return new int[]{};
-	}
-	
-	public static int[] sortedSquares(int[] nums) {
-		int[] squares = new int[nums.length];
-		int sq = nums.length-1;
-		int left = 0;
-		int right = nums.length-1;
-		while (left <= right) {
-			int leftsq = (int) Math.pow(nums[left],2);
-			int rightsq = (int) Math.pow(nums[right],2);
-			if (leftsq > rightsq) {
-				squares[sq] = leftsq;
-				left++;
-			} else {
-				squares[sq] = rightsq;
-				right--;
-			}
-			sq--;
-		}
-		return squares;
 	}
 	
 	public static boolean backspaceCompare(String s, String t) {
