@@ -7,15 +7,61 @@ import java.util.Stack;
 
 public class TwoPointers {
 	public static void main(String[] args) {
-		int[] nums = {-1,2,1,-4};
-		int[] sqs = sortedSqs(nums);
-		for (int n : sqs) {
+		int[] nums = {3,5,3,4};
+		 System.out.println(numRescueBoats(nums, 5));
+		for (int n : nums) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
-		 String s = "ab#c", t = "ad#c";
-		 System.out.println(bs_compare(s,t));
-		 System.out.println(threeSum(nums, 1));
+	}
+	
+	public static int numRescueBoats(int[] people, int limit) {
+		/*
+		 * Leet-code 881
+		 */
+		// Using greedy approach, sorting the array first.
+		Arrays.sort(people);
+		// Initialize the pointers and boats.
+		int boats = 0;
+		int left = 0;
+		int right = people.length-1;
+		/*
+		 * We should check if our pointers sum is smaller or greater than limit.
+		 * If smaller, then means we can fit these two people. boats++, and both pointers move.
+		 * If no, right needs its own boat, so boats++ and right--;
+		 */
+		while (left <= right) {
+			int sum = people[left] + people[right];
+			if (sum <= limit) {
+				boats++;
+				left++; right--;
+			} else
+				boats++; right--;
+		}
+		return boats;
+	}
+	
+	public static int removeDuplicates(int[] nums) {
+		/*
+		 * Leet-code 80
+		 */
+		// Edge case: If array length is smaller equal to 2.
+		if (nums.length <= 2)
+			return nums.length;
+		/*
+		 * Starting pointers with 2 index. Check if the fast pointer
+		 * is not equal to slow pointer, copy and move slow++
+		 */
+		int slow = 2;
+		int fast = 2;
+		while (fast < nums.length) {
+			if (nums[fast] != nums[slow-2]) {
+				nums[slow] = nums[fast];
+				slow++;
+			}
+			fast++;
+		}
+		return slow;
 	}
 	
 	public static int threeSum(int[] nums, int target) {
