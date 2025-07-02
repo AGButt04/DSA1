@@ -7,12 +7,65 @@ import java.util.Stack;
 
 public class TwoPointers {
 	public static void main(String[] args) {
-		int[] nums = {3,5,3,4};
-		 System.out.println(numRescueBoats(nums, 5));
+		int[] nums = {2,0,2,1,1,0};
+		sortColors2(nums);
 		for (int n : nums) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
+	}
+	
+	public static void swap(int[] nums, int left, int right) {
+		int temp = nums[left];
+		nums[left] = nums[right];
+		nums[right] = temp;
+	}
+	
+	public static void sortColors2(int[] nums) {
+		/*
+		 * Leet-code 75
+		 * Using Dutch National Flag technique
+		 */
+		int left = 0;
+		int current = 0;
+		int right = nums.length-1;
+		/*
+		 * Left points at where zero should go,
+		 * right points at where 2s should go, and
+		 * current where 1s should go, at the place
+		 */
+		while (current <= right) {
+			/*
+			 * We check if current element == 0. If yes, we swap with
+			 * the element at left and if element == 2, swap with element
+			 * at right index. And move pointers accordingly.
+			 */
+			if (nums[current] == 0) {
+				swap(nums, left, current);
+				left++; current++;
+			} else if (nums[current] == 1) {
+				current++;
+			} else {
+				swap(nums, right, current);
+				right--;
+			}	
+		}
+	}
+	
+	public static void sortColors(int[] nums) {
+		int left = 0;
+		int right = nums.length-1;
+		while (left < right) {
+			if (nums[left] == nums[right]) {
+				left++;
+				right--;
+			} else if (nums[left] > nums[right]) {
+				swap(nums, left, right);
+				right--;
+			} else {
+				left++;
+			}
+		}
 	}
 	
 	public static int numRescueBoats(int[] people, int limit) {
