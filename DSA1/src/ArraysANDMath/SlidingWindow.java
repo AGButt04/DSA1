@@ -8,7 +8,48 @@ public class SlidingWindow {
 		int[] nums = {2,3,1,2,4,3};
 //		int len = lengthOfLongestSubstring("abcabcbb");
 //		System.out.println(len);
-		System.out.println(checkInclusion("ab", "eidbaooo"));
+		String s = "ADOBECODEBANC";
+		String t = "ABC";
+		System.out.println(minWindow(s, t));
+	}
+	
+	public static String minWindow(String s, String t) {
+		HashMap<Character, Integer> smap = new HashMap<>();
+		HashMap<Character, Integer> tmap = new HashMap<>();
+		
+		for (int i = 0; i < t.length(); i++) {
+			char c = t.charAt(i);
+			tmap.put(c, tmap.getOrDefault(c,0) + 1);
+		}
+		
+		int left = 0, right = 0;
+		int minLength = Integer.MAX_VALUE;
+		int currentmatches = 0;
+		int requiredmatches = tmap.size();
+		int minStart = 0, minEnd = 0;
+		while (right < s.length()) {
+			char ch = s.charAt(right);
+			smap.put(ch, smap.getOrDefault(ch, 0) + 1);
+			if (smap.containsKey(ch) && smap.get(ch).equals(tmap.get(ch)))
+				currentmatches++;
+			
+			while (currentmatches >= requiredmatches) {
+				int currLength = (right-left)+1;
+				if (minLength > currLength) {
+					minStart = left;
+					minEnd = right;
+					minLength = currLength;
+				}
+				char c = s.charAt(left);
+				if (tmap.containsKey(c) && smap.get(c).equals(tmap.get(c))) {
+					currentmatches--;
+				}
+				smap.put(c, smap.get(c) - 1);
+				left++;
+			}
+			right++;
+		}
+		return minLength == Integer.MAX_VALUE ? "" : s.substring(minStart, minEnd+1);
 	}
 	
 	public static boolean checkInclusion(String s1, String s2) {
