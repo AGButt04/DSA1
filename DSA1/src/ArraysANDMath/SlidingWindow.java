@@ -1,54 +1,121 @@
 package ArraysANDMath;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 public class SlidingWindow {
 
 	public static void main(String[] args) {
-		int[] nums = {2,3,1,2,4,3};
+		int[] nums = {1,3,-1,-3,5,3,6,7};
 //		int len = lengthOfLongestSubstring("abcabcbb");
 //		System.out.println(len);
 		String s = "ADOBECODEBANC";
 		String t = "ABC";
-		System.out.println(minWindow(s, t));
+		int[] maxes = maxSlidingWindow(nums, 3);
+		for (int max : maxes) {
+			System.out.print(max + " ");
+		}
+		System.out.println();
 	}
 	
+	public static int[] maxSlidingWindow(int[] nums, int k) {
+		/*
+		 * Leet-code 239 (Hard)
+		 */	
+		// Initialize maxHeap to keep track of the max and its index
+		// maxes array to return the desired array, and its index.
+		int[] maxes = new int[nums.length - k + 1];
+		PriorityQueue<int[]> maxHeap = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+		int ind = 0;
+		// Loop through first k elements of and add them to heap with their index. 
+		for (int i = 0; i < k; i++) {
+			maxHeap.offer(new int[] {nums[i], i});
+		}
+		maxes[ind] = maxHeap.peek()[0];
+		ind++;
+		// Next loop to move window and adding max at each iteration
+		for (int j = k; j < nums.length; j++) {
+			int newElem = nums[j];
+			int left = j - k + 1;
+			maxHeap.offer(new int[] {newElem, j});
+			// We have to clean the array until we have k elements 
+			// so that it does not violate k property of the window
+			while (!maxHeap.isEmpty() && maxHeap.peek()[1] < left) {
+				maxHeap.poll();
+			}
+			maxes[ind] = maxHeap.peek()[0];
+			ind++;
+		}
+		// RETURN MAXES
+		return maxes;
+	}
+			
+	
 	public static String minWindow(String s, String t) {
+		/*
+		 * Leet-code 76 (Hard)
+		 */
+		// HashMaps to store the characters and their frequencies for both strings
 		HashMap<Character, Integer> smap = new HashMap<>();
 		HashMap<Character, Integer> tmap = new HashMap<>();
 		
+		// Populating tmap with the characters in t and their frequencies
 		for (int i = 0; i < t.length(); i++) {
 			char c = t.charAt(i);
 			tmap.put(c, tmap.getOrDefault(c,0) + 1);
 		}
 		
+		/*
+		 * left and right pointers for the window sliding
+		 * minLength to keep track of minimum window
+		 * current-matches to keep track of how many t characters
+		 * have we seen and does their frequencies match. 
+		 * required-matches is just our tmap's size - the number of elements
+		 * minStart and minEnd to keep track of minimum windows' start,end indexes
+		 */
 		int left = 0, right = 0;
 		int minLength = Integer.MAX_VALUE;
 		int currentmatches = 0;
 		int requiredmatches = tmap.size();
 		int minStart = 0, minEnd = 0;
+		
 		while (right < s.length()) {
+			/*
+			 * We update each character in smap, and check if current character
+			 * is in tmap and has same frequency, if yes, we got one match.
+			 */
 			char ch = s.charAt(right);
 			smap.put(ch, smap.getOrDefault(ch, 0) + 1);
 			if (smap.containsKey(ch) && smap.get(ch).equals(tmap.get(ch)))
 				currentmatches++;
 			
+			/*
+			 * Main-logic loop: This loop will start running when the current-matches
+			 * are equal or greater than tmap's size. And we keep on shrinking window until
+			 * we have terminate the property which is tmap should be in smap.
+			 */
 			while (currentmatches >= requiredmatches) {
 				int currLength = (right-left)+1;
+				// If this window's length is smaller, update that and pointers
 				if (minLength > currLength) {
 					minStart = left;
 					minEnd = right;
 					minLength = currLength;
 				}
 				char c = s.charAt(left);
+				// If this character is in smap and has same frequency, decrement current-matches.
 				if (tmap.containsKey(c) && smap.get(c).equals(tmap.get(c))) {
 					currentmatches--;
 				}
+				// Update smap and shrink the window by moving left.
 				smap.put(c, smap.get(c) - 1);
 				left++;
 			}
 			right++;
 		}
+		// return "" if we couldn't find one else substring from minStart and minEnd indexes.
 		return minLength == Integer.MAX_VALUE ? "" : s.substring(minStart, minEnd+1);
 	}
 	
