@@ -9,20 +9,51 @@ import java.util.PriorityQueue;
 public class SlidingWindow {
 
 	public static void main(String[] args) {
-		int[] nums = {1,3,-1,-3,5,3,6,7};
+		int[] nums = {1,1,1,0,0,0,1,1,1,1,0};
 //		int len = lengthOfLongestSubstring("abcabcbb");
 //		System.out.println(len);
 		String s = "barfoofoobarthefoobarman";
 		String[] words = {"bar", "foo", "the"};
-		List<Integer> maxes = findSubstring(s, words);
-		for (int max : maxes) {
-			System.out.print(max + " ");
-		}
-		System.out.println();
+		System.out.println(longestOnes(nums, 2));
+//		for (int max : maxes) {
+//			System.out.print(max + " ");
+//		}
+//		System.out.println();
 	}
 	
 	public static int longestOnes(int[] nums, int k) {
+		/*
+		 * Leet-code 1004 (Medium)
+		 */
 		
+		/*
+		 * Initialize maxLength to keep track of max Length so far
+		 * zero_count to count how many zeros in the current window
+		 * left pointer to shrink window to the right to exclude zeros
+		 */
+		int maxLength = 0;
+		int zero_count = 0;
+		int left = 0;
+		
+		for (int right = 0; right < nums.length; right++) {
+			// We check if we encountered a zero, then increment count
+			if (nums[right] == 0)
+				zero_count++;
+			
+			// As soon as our window becomes invalid as more zeros than
+			// k, then we start shrinking the window to exclude those over zeros
+			while (zero_count > k) {
+				if (nums[left] == 0)
+					zero_count--;
+				left++;
+			}
+			
+			// Find the max length at each iteration
+			maxLength = Math.max(maxLength, (right-left)+1);
+		}
+		
+		// return max
+		return maxLength;
 	}
 	
 	public static List<Integer> findSubstring(String s, String[] words) {
