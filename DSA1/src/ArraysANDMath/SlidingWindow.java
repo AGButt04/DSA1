@@ -3,6 +3,7 @@ package ArraysANDMath;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class SlidingWindow {
@@ -11,13 +12,59 @@ public class SlidingWindow {
 		int[] nums = {1,3,-1,-3,5,3,6,7};
 //		int len = lengthOfLongestSubstring("abcabcbb");
 //		System.out.println(len);
-		String s = "ADOBECODEBANC";
-		String t = "ABC";
-		int[] maxes = maxSlidingWindow(nums, 3);
+		String s = "barfoofoobarthefoobarman";
+		String[] words = {"bar", "foo", "the"};
+		List<Integer> maxes = findSubstring(s, words);
 		for (int max : maxes) {
 			System.out.print(max + " ");
 		}
 		System.out.println();
+	}
+	
+	public static int longestOnes(int[] nums, int k) {
+		
+	}
+	
+	public static List<Integer> findSubstring(String s, String[] words) {
+		List<Integer> indexes = new ArrayList<>();
+		HashMap<String, Integer> wordMap = new HashMap<>();
+		int wordLen = words[0].length();
+		int totalLen = words.length * wordLen;
+
+		// Build frequency map for target words
+		for (String word : words) {
+		   wordMap.put(word, wordMap.getOrDefault(word, 0) + 1);
+		}
+		
+		// Try all possible starting offsets (0 to wordLen-1)
+		for (int offset = 0; offset < wordLen; offset++) {
+		   HashMap<String, Integer> window = new HashMap<>();
+		   int left = offset;
+		   
+		   // Slide window by wordLen steps starting from this offset
+		   for (int right = offset; right <= s.length() - wordLen; right += wordLen) {
+			   
+		       // Add word at right position to window
+		       String rightWord = s.substring(right, right + wordLen);
+		       window.put(rightWord, window.getOrDefault(rightWord, 0) + 1);  
+		       
+		       // If window is too big, shrink from left
+		       if (right - left + wordLen > totalLen) {
+		           String leftWord = s.substring(left, left + wordLen);
+		           window.put(leftWord, window.get(leftWord) - 1);
+		           if (window.get(leftWord) == 0) {
+		               window.remove(leftWord);
+		           }
+		           left += wordLen;
+		       }
+		       
+		       // Check if current window matches target
+		       if (window.equals(wordMap)) {
+		           indexes.add(left);
+		       }
+		   }
+		}
+		return indexes;
 	}
 	
 	public static int[] maxSlidingWindow(int[] nums, int k) {
