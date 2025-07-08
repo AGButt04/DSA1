@@ -2,6 +2,7 @@ package ArraysANDMath;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -9,16 +10,155 @@ import java.util.PriorityQueue;
 public class SlidingWindow {
 
 	public static void main(String[] args) {
-		int[] nums = {1,1,1,0,0,0,1,1,1,1,0};
+		int[] nums = {1,2,1,2,3};
 //		int len = lengthOfLongestSubstring("abcabcbb");
 //		System.out.println(len);
 		String s = "barfoofoobarthefoobarman";
 		String[] words = {"bar", "foo", "the"};
-		System.out.println(longestOnes(nums, 2));
+		System.out.println(subarrayswithK(nums, 2));
 //		for (int max : maxes) {
 //			System.out.print(max + " ");
 //		}
 //		System.out.println();
+	}
+	
+	public static int subarraysWithMostK(int[] nums, int k) {
+		/*
+		 * Helper function for leet-code 992
+		 */
+		/*
+		 * This would store the integers and their counts in HashMap
+		 * to track where we are, and what is their frequencies.
+		 */
+		HashMap<Integer, Integer> map = new HashMap<>();
+		int left = 0, count = 0;
+		for (int right = 0; right < nums.length; right++) {
+			// We can put the element in the map with its updated count
+			map.put(nums[right], map.getOrDefault(nums[right], 0) + 1);
+			// And as soon as window becomes invalid as more than k elements
+			while (map.size() > k) {
+				// We go into loop and clean the map removing
+				// elements at left index (starting of window).
+				int elem = nums[left];
+				map.put(elem, map.get(elem) - 1);
+				if (map.get(elem) == 0)
+					map.remove(elem);
+				// We keep shrinking window till we have a valid window with map's size <= k
+				left++;
+			}
+			// Increment the count with the length of the sub-array that is
+			// between the right and left indexes + 1.
+			count += (right - left)  + 1;
+		}
+		// return the count
+		return count;
+	}
+	
+	public static int subarraysWithKDistinct(int[] nums, int k) {
+		/*
+		 * Leet-code 992 (Hard)
+		 */
+		
+		/*
+		 * Finding sub-arrays with exactly k elements mean, sub-arrays
+		 * with at most k elements i.e all sub-arrays with elements less
+		 * than k. We can subtract this value from sub-arrays with (k-1)
+		 * sub-arrays, as that would subtract all sub-arrays where different 
+		 * elements were 1,2,3,...(k-1).
+		 * We can write a helper function for that that would find at-most K 
+		 * elements, and we can just call it twice.
+		 */
+		int allcount = 0;
+		allcount = subarraysWithMostK(nums, k) - subarraysWithMostK(nums, k - 1);
+		return allcount;
+	}
+	
+	public int longestSubarrayOptimized(int[] nums, int limit) {
+		// Store INDICES in heaps, not values - this enables lazy deletion
+	    // Max heap: indices sorted by their values in descending order
+	    PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> nums[b] - nums[a]);
+	    // Min heap: indices sorted by their values in ascending order  
+	    PriorityQueue<Integer> minHeap = new PriorityQueue<>((a, b) -> nums[a] - nums[b]);
+	    
+	    int left = 0;
+	    int maxLength = 0;
+	    
+	    for (int right = 0; right < nums.length; right++) {
+	        // Add current index to both heaps
+	        maxHeap.offer(right);
+	        minHeap.offer(right);
+	        
+	        // Check if current window violates the limit condition
+	        // We need to clean invalid indices first before checking
+	        while (true) {
+	            // Remove indices that are outside current window from max heap
+	            while (!maxHeap.isEmpty() && maxHeap.peek() < left) {
+	                maxHeap.poll();
+	            }
+	            // Remove indices that are outside current window from min heap
+	            while (!minHeap.isEmpty() && minHeap.peek() < left) {
+	                minHeap.poll();
+	            }
+	            
+	            // Now check if current window is valid
+	            if (maxHeap.isEmpty() || minHeap.isEmpty()) break;
+	            
+	            int maxVal = nums[maxHeap.peek()];
+	            int minVal = nums[minHeap.peek()];
+	            
+	            // If window is valid, break out of while loop
+	            if (maxVal - minVal <= limit) {
+	                break;
+	            }
+	            
+	            // Window is invalid, shrink it by moving left pointer
+	            left++;
+	        }
+	        
+	        // Update maximum length found so far
+	        maxLength = Math.max(maxLength, right - left + 1);
+	    }
+	    
+	    return maxLength;
+	}
+	
+	public static int longestSubarray(int[] nums, int limit) {
+		/*
+		 * Leet-code 1438 (Medium)
+		 */
+		// Min-heap to keep track of minimum value of the window
+		// Max-heap to keep track of maximum value of the window
+		PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+		PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+
+		// Left pointer to shrink the window
+		// MaxLength to keep track of max length of each window
+		int left = 0, maxLength = 0;
+		
+		for (int right = 0; right < nums.length; right++) {
+			// Adding the current element into both heaps
+			maxHeap.offer(nums[right]);
+			minHeap.offer(nums[right]);
+			
+			// And check if the max and min values of the  
+			// current window is more than the limit
+			int check = maxHeap.peek() - minHeap.peek();
+			
+			// If yes, then we start shrinking the window from the
+			// left side, removing invalid elements from the window
+			while (check > limit) {
+				minHeap.remove(nums[left]);
+				maxHeap.remove(nums[left]);
+				// After removing the element, we gotta check again to see
+				// if the current window is still invalid or not. and move left++
+				check = maxHeap.peek() - minHeap.peek();
+				left++;
+			}
+			// Update maxLength at each iteration
+			maxLength = Math.max(maxLength, (right-left) + 1);
+		}
+		// return length
+		return maxLength;
 	}
 	
 	public static int longestOnes(int[] nums, int k) {
