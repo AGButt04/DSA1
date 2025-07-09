@@ -10,16 +10,45 @@ import java.util.PriorityQueue;
 public class SlidingWindow {
 
 	public static void main(String[] args) {
-		int[] nums = {1,2,1,2,3};
+		int[] nums = {1,1,1};
 //		int len = lengthOfLongestSubstring("abcabcbb");
 //		System.out.println(len);
 		String s = "barfoofoobarthefoobarman";
 		String[] words = {"bar", "foo", "the"};
-		System.out.println(subarrayswithK(nums, 2));
+		System.out.println(longestSubarrayofOnes(nums));
 //		for (int max : maxes) {
 //			System.out.print(max + " ");
 //		}
 //		System.out.println();
+	}
+	
+	public static int longestSubarrayofOnes(int[] nums) {
+		/*
+		 * Leet-code 1493 (Medium)
+		 */
+		// Initializing maxLen to keep track of max length of sub-array
+		// zero_count to count how many zeros have occurred
+		// left pointer to shrink the window
+		int maxLen = 0;
+		int zero_count = 0;
+		int left = 0;
+		for (int right = 0; right < nums.length; right++) {
+			// This would check if current element is zero and increment count
+			if (nums[right] == 0)
+				zero_count++;
+			// Our condition is removing one element, so if more than 1 zeros
+			// then window becomes invalid and we start shrinking it.
+			while (zero_count > 1) {
+				if (nums[left] == 0)
+					zero_count--;
+				left++;
+			}
+			// update the max length in each iteration
+			// right - length will give us right answer for this problem as it is
+			// guaranteed that we have to delete one element whether that's zeros or ones
+			maxLen = Math.max(maxLen, right-left);
+		}
+		return maxLen;
 	}
 	
 	public static int subarraysWithMostK(int[] nums, int k) {
