@@ -91,32 +91,7 @@ public class LinkedList {
 		return before.next;
 	}
 	
-	public static Node rotateRight(Node head, int k) {
-		if (head.next == null || head == null)
-			return head;
-		Node walker = head;
-		int count = 0;
-		while (walker != null) {
-			count++;
-			walker = walker.next;
-		}
-		int rot = k % count;
-        int i = 0;
-        while (i < rot) {
-            Node walker2 = head, prev = null;
-            while (walker2.next != null) {
-            	prev = walker2;
-                walker2 = walker2.next;
-            }
-            walker2.next = head;
-            prev.next = null;
-            head = walker2;
-            
-            i++;
-        }
-        return head;
-    }
-	
+
 	public static Node removeDup(Node head) {
 		if (head == null || head.next == null)
 			return head;
