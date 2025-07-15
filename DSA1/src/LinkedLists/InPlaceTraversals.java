@@ -6,23 +6,82 @@ public class InPlaceTraversals {
 
 	public static void main(String[] args) {
 		ListNode head = new ListNode(1);
-		ListNode two = new ListNode(2);
-		ListNode three = new ListNode(3);
-		ListNode four = new ListNode(4);
-//		ListNode five = new ListNode(5);
+		ListNode two = new ListNode(1);
+		ListNode three = new ListNode(1);
+		ListNode four = new ListNode(3);
+		ListNode five = new ListNode(4);
+		ListNode six = new ListNode(4);
+		ListNode seven = new ListNode(5);
 		head.next = two; 
 		two.next = three;
 		three.next = four;
-		four.next = null;
-//		five.next = null;
+		four.next = five;
+		five.next = six;
+		six.next = seven;
+		seven.next = null;
 		
-		ListNode newHead = evenoddList(head);
+		ListNode newHead = deleteDuplicates(head);
 		while (newHead != null) {
 			System.out.print(newHead.val + " ");
 			newHead = newHead.next;
 		}
 		System.out.println();
 
+	}
+	
+	public static ListNode deleteDuplicates(ListNode head) {
+		/*
+		 * Leet-code 82
+		 */
+		if (head == null || head.next == null)
+			return head;
+		
+		ListNode dummy = new ListNode(0);
+		ListNode prev = dummy;
+		ListNode walker = head;
+		while (walker != null && walker.next != null) {
+			if (walker.val != walker.next.val) {
+				prev.next = walker;
+				prev = walker;
+				walker = walker.next;
+				continue;
+			} else {
+				while (walker.next != null && walker.val == walker.next.val) {
+					walker = walker.next;
+				}
+				walker = walker.next;
+				prev.next = walker;
+			}
+		}
+		
+		return dummy.next;
+	}
+	
+	public static ListNode partitionList(ListNode head, int x) {
+		/*
+		 * Leet-code 86 (Medium)
+		 */
+		if (head == null || head.next == null)
+			return head;
+		ListNode dummy1 = new ListNode(0);
+		ListNode dummy2 = new ListNode(0);
+		ListNode prev1 = dummy1;
+		ListNode prev2 = dummy2;
+		ListNode walker = head;
+		while (walker != null) {
+			if (walker.val < x) {
+				prev1.next = walker;
+				prev1 = prev1.next;
+			} else {
+				prev2.next = walker;
+				prev2 = prev2.next;
+			}
+			walker = walker.next;
+		}
+		prev2.next = null;
+		prev1.next = dummy2.next;
+		
+		return dummy1.next;
 	}
 	
 	public static ListNode addtwonumbers(ListNode l1, ListNode l2) {
