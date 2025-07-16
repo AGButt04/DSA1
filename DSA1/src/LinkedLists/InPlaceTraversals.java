@@ -1,32 +1,168 @@
 package LinkedLists;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 
 public class InPlaceTraversals {
 
 	public static void main(String[] args) {
 		ListNode head = new ListNode(1);
-		ListNode two = new ListNode(1);
-		ListNode three = new ListNode(1);
-		ListNode four = new ListNode(3);
-		ListNode five = new ListNode(4);
-		ListNode six = new ListNode(4);
-		ListNode seven = new ListNode(5);
-		head.next = two; 
-		two.next = three;
-		three.next = four;
-		four.next = five;
-		five.next = six;
-		six.next = seven;
-		seven.next = null;
+		ListNode two = new ListNode(2);
+		ListNode three = new ListNode(3);
+		ListNode four = new ListNode(4);
+		ListNode five = new ListNode(5);
+		ListNode six = new ListNode(6);
+		ListNode seven = new ListNode(7);
+		head.next = two; head.random = four;
+		two.next = three; two.random = head;
+		three.next = four; three.random = five;
+		four.next = five; four.random = seven;
+		five.next = six; five.random = three;
+		six.next = seven; six.random = five;
+		seven.next = null; seven.random = head;
 		
-		ListNode newHead = deleteDuplicates(head);
+		ListNode walker = head;
+		ListNode newHead = randomCopyList(head);
+		while (walker != null) {
+			System.out.println(walker.val + ","  + walker.random.val);
+			walker = walker.next;
+		}
+		System.out.println("Copy:");
 		while (newHead != null) {
-			System.out.print(newHead.val + " ");
+			System.out.println(newHead.val + ","  + newHead.random.val);
 			newHead = newHead.next;
 		}
-		System.out.println();
-
+	}
+	
+	public static ListNode randomCopyList(ListNode head) {
+		/*
+		 * Leet-code 138 (Medium)
+		 */
+		/*
+		 * This one is tricky in sense as there are random pointers
+		 * involved but we can use HashMap for that.
+		 */
+		/*
+		 * Using HashMap to store the copy node of the original list's node.
+		 * dummy pointer will point to the head of the new list.
+		 * current will make the new list as starting from dummy.
+		 * walker will iterate over the original list to create copies.
+		 */
+		HashMap<ListNode, ListNode> copies = new HashMap<>();
+		ListNode dummy = new ListNode(0);
+		ListNode current = dummy;
+		ListNode walker = head;
+		while (walker != null) {
+			/*
+			 * We create a new list node and copy in the walker's value.
+			 * put the original node and its copy in the HashMap.
+			 * attach the links for the new copy list and move walker.
+			 */
+			ListNode node = new ListNode(walker.val);
+			copies.put(walker, node);
+			current.next = node;
+			current = current.next;
+			walker = walker.next;
+		}
+		
+		walker = head;
+		while (walker != null) {
+			/*
+			 * Now we can attach the random pointers.
+			 * We can access the copy node from map and 
+			 * also access the copy of node's random node
+			 * and attach the links in between. This will make
+			 * sure that our copy node is being connected to the 
+			 * random node of the copy list not the original.
+			 */
+			ListNode copy = copies.get(walker);
+			if (walker.random != null)
+				copy.random = copies.get(walker.random);
+			else
+				copy.random = null;
+			walker = walker.next;
+		}
+		// return the head of the copy list.
+		return dummy.next;
+	}
+	
+	public static ListNode[] splitListToParts(ListNode head, int k) {
+		/*
+		 * Leet-code 725 (medium)
+		 */
+		/*
+		 * This one splits the linked list in k parts.
+		 * We create a nodes array new the length is k.
+		 * We check the edge cases and just return the array accordingly.
+		 */
+		ListNode[] nodes = new ListNode[k];
+		if (head == null || head.next == null || k == 0) {
+			nodes[0] = head;
+			return nodes;
+		}
+		/*
+		 * Then we count the length of the array as needed to find 
+		 * how many nodes to assign to each part of the split.
+		 */
+		int length = 0;
+		int[] iterations = new int[k];
+		ListNode walker = head;
+		while (walker != null) {
+			length++;
+			walker = walker.next;
+		}
+		/*
+		 * If the length is smaller than k that means the whole list
+		 * will be divided in part of length 1 and remaining nulls;
+		 */
+		if (length <= k) {
+			walker = head;
+			for (int i = 0; i < k && walker != null; i++) {
+				nodes[i] = walker;
+				ListNode temp = walker.next;
+				walker.next = null;
+				walker = temp;
+			}
+			return nodes;
+		}
+		/*
+		 * We then find the number of minimum nodes that can be assigned
+		 * to each part (parts), and then just add the number to each index
+		 * in iterations array which will help when adding nodes. If there are
+		 * remaining nodes that will be each divided to the starting parts of the iterations.
+		 */
+		int parts = length / k;
+		for (int i = 0; i < k; i++) {
+			iterations[i] = parts;
+		}
+		int remainder = length % k;
+		for (int i = 0; i < remainder; i++) {
+			iterations[i] = iterations[i] + 1;
+		}
+		walker = head;
+		/*
+		 * Then we iterate over the list k times to create partitions
+		 */
+		for (int i = 0; i < k; i++) {
+			/*
+			 * Each time we iterate over the array iterations[i] times
+			 * and just add the nodes into the nodes list, and using prev
+			 * to break the link between partitioning nodes to avoid bugs.
+			 */
+			int counter = 0;
+			int stoplimit = iterations[i];
+			ListNode part = walker;
+			ListNode prev = null;
+			while (counter < stoplimit && walker != null) {
+				prev = walker;
+				walker = walker.next;
+				counter++;
+			}
+			prev.next = null;
+			nodes[i] = part;
+		}
+		return nodes;
 	}
 	
 	public static ListNode deleteDuplicates(ListNode head) {
@@ -277,10 +413,12 @@ public class InPlaceTraversals {
 	private static class ListNode {
 		int val;
 		ListNode next;
+		ListNode random;
 		
 		ListNode(int x) {
 			this.val = x;
 			this.next = null;
+			this.random = null;
 		}
 	}
 
