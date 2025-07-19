@@ -10,16 +10,40 @@ import java.util.PriorityQueue;
 public class SlidingWindow {
 
 	public static void main(String[] args) {
-		int[] nums = {1,1,1};
+		int[] nums = {1, 2, 1, 0, 1, 1, 0};
 //		int len = lengthOfLongestSubstring("abcabcbb");
 //		System.out.println(len);
 		String s = "barfoofoobarthefoobarman";
 		String[] words = {"bar", "foo", "the"};
-		System.out.println(longestSubarrayofOnes(nums));
+		System.out.println(longestLength(nums, 4));
 //		for (int max : maxes) {
 //			System.out.print(max + " ");
 //		}
 //		System.out.println();
+	}
+	
+	public static int longestLength(int[] nums, int k) {
+		/*
+		 * 🧩 Problem:
+		 * You are given an array of positive integers and an integer k.
+		 * Return the length of the longest sub-array whose sum is less than or equal to k.
+		 */
+		int maxLength = 0;
+		int left = 0;
+		int right = 0;
+		int sum = 0;
+		while (right < nums.length) {
+			sum += nums[right];
+			
+			while (sum > k) {
+				int num = nums[left];
+				sum -= num;
+				left++;
+			}
+			maxLength = Math.max(maxLength, right - left + 1);
+			right++;
+		}
+		return maxLength;
 	}
 	
 	public static int longestSubarrayofOnes(int[] nums) {
