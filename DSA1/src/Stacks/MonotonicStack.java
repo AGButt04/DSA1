@@ -1,6 +1,7 @@
 package Stacks;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Stack;
@@ -8,13 +9,106 @@ import java.util.Stack;
 public class MonotonicStack {
 
 	public static void main(String[] args) {
-		int[] nums1 = {73,74,75,71,69,72,76,73};
-		int[] result = dailyTemperatures(nums1);
+		int[] nums1 = {5,4,3,2,1};
+		int[] heights = {2,1,5,6,2,3};
+		int[] result = nextGreaterElements(nums1);
 		for (int n : result) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
+		System.out.println(largestRectangleArea(heights));
 	}
+	
+	public static int largestRectangleArea(int[] heights) {
+		/*
+		 * Leet-code 84 (hard)
+		 */
+		/*
+		 * Here we are using stack to hold the indexes in the increasing
+		 * order of heights, not the indexes, and initializing maxArea = 0.
+		 */
+		Deque<Integer> st = new ArrayDeque<>();
+		int maxArea = 0;
+		for (int i = 0; i < heights.length; i++) {
+			/*
+			 * This loop will check if the current element is smaller than
+			 * the top element of the stack then we just calculate the area
+			 * of that top element (bar) of the array and store it if its bigger.
+			 */
+			int h = heights[i];
+			while (!st.isEmpty() && h < heights[st.peek()]) {
+				/*
+				 * left would be the left boundary which will give us width,
+				 * if stack is empty then left boundary is -1.
+				 */
+				int left = 0;
+				int index = st.pop();
+				if (st.isEmpty())
+					left = -1;
+				else
+					left = st.peek();
+				// Area = height * (width = current index - left_boundary - 1)
+				int area = heights[index] * (i - left - 1);
+				maxArea = Math.max(area, maxArea);
+			}
+			st.push(i);
+		}
+		/*
+		 * Here, we check if the stack is empty with the indexes, if not
+		 * then we do the same thing for the remaining element with right
+		 * boundary = heights.length, means it can't be wider than that.
+		 */
+		while (!st.isEmpty()) {
+			int height = heights[st.pop()];
+			int left = 0;
+			if (st.isEmpty())
+				left = -1;
+			else
+				left = st.peek();
+			int area = height * (heights.length - left - 1);
+			maxArea = Math.max(maxArea, area);
+		}
+		
+		return maxArea;
+	}
+	
+	public static int[] nextGreaterElements(int[] nums) {
+		/*
+		 * Leet-code 503 (medium)
+		 */
+		/*
+		 * This is the second version of nextGreaterElements, where we
+		 * are treating the array as a circular array and the next greater
+		 * element can be after or before the current element.
+		 */
+		Deque<Integer> st = new ArrayDeque<>();
+		int[] result = new int[nums.length];
+		Arrays.fill(result, -1); // Filling the array with -1s as default
+		
+		/*
+		 * The loop is going to run twice the length of array as it checks
+		 * whole array for the next greater element. 
+		 */
+		for (int i = 0; i < 2 * nums.length; i++) {
+			/*
+			 * We can use modulo operator to get the required
+			 * index and can use the stack again to see if it has
+			 * the greater element.
+			 */
+			int num = nums[i % nums.length];
+			while (!st.isEmpty() && nums[st.peek()] < num) {
+				// If there is a greater element then we pop the
+				// stack for index and put the current element in the result.
+				int n = st.pop();
+				result[n] = num;
+			}
+			// This makes sure that we just push the indexes once while iterating.
+			if (i < nums.length)
+				st.push(i);
+		}
+		return result;
+	}
+	
 	
 	public static int[] dailyTemperatures(int[] temperatures) {
 		/*
