@@ -22,6 +22,31 @@ public class SlidingWindow {
 //		System.out.println();
 	}
 	
+	public static int findmaxAVG(int[] nums, int k) {
+		/*
+		 * 🧩 Problem:
+		 * 	Given an array of integers nums and an integer k, 
+		 * return the maximum average of any sub-array of length k.
+		 */
+		int maxSum = 0;
+		int sum = 0;
+		int left = 0;
+		int right = 0;
+		while (right < nums.length) {
+			sum += nums[right];
+			while (right - left + 1 > k) {
+				sum -= nums[left];
+				left++;
+			}
+			if (right - left + 1 == k)
+				maxSum = Math.max(sum, maxSum);
+			right++;
+		}
+		return maxSum / k;
+	}
+	
+	
+	
 	public static int longestLength(int[] nums, int k) {
 		/*
 		 * 🧩 Problem:
