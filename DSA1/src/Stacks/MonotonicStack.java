@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Stack;
 
 public class MonotonicStack {
@@ -17,6 +18,53 @@ public class MonotonicStack {
 		}
 		System.out.println();
 		System.out.println(largestRectangleArea(heights));
+		StockSpanner stockSpanner = new StockSpanner();
+		stockSpanner.next(100); // return 1
+		stockSpanner.next(80);  // return 1
+		stockSpanner.next(60);  // return 1
+		stockSpanner.next(70);  // return 2
+		stockSpanner.next(60);  // return 1
+		stockSpanner.next(75);  // return 4
+		stockSpanner.next(85);  // return 6
+	}
+	
+	public static String removeDuplicates(String s) {
+		/*
+		 * Leet-code 316
+		 */
+		// Step 1: Count frequency of each character
+		HashMap<Character, Integer> count = new HashMap<>();
+		for (char c : s.toCharArray()) {
+		    count.put(c, count.getOrDefault(c, 0) + 1);
+		}
+
+		// Step 2: Track which characters are already in result
+		HashSet<Character> inResult = new HashSet<>();
+
+		// Step 3: Build result using monotonic stack
+		Deque<Character> stack = new ArrayDeque<>();
+
+		for (char c : s.toCharArray()) {
+		    // Decrease count (we're processing this character)
+		    count.put(c, count.get(c) - 1);
+		    
+		    // If already in result, skip
+		    if (inResult.contains(c)) continue;
+		    
+		    while (!stack.isEmpty() && stack.peek() > c && count.get(stack.peek()) > 0) {
+		    	inResult.remove(stack.pop());
+		    }
+		    
+		    // Add current character
+		    stack.push(c);
+		    inResult.add(c);
+		}
+		
+		StringBuilder result = new StringBuilder();
+		while (!stack.isEmpty()) {
+		    result.append(stack.removeLast());
+		}
+		return result.toString();
 	}
 	
 	public static int largestRectangleArea(int[] heights) {
@@ -178,5 +226,35 @@ public class MonotonicStack {
 		}
 		return result;
 	}
-
+	
+	static class StockSpanner {
+		/*
+		 * Leet-code 901
+		 */
+		
+		class pair {
+			int key;
+			int value;
+			public pair(int k, int v) {
+				this.key = k;
+				this.value = v;
+			}
+		}
+		
+		Deque<pair> stack;
+		
+	    public StockSpanner() {
+	        stack = new ArrayDeque<>();
+	    }
+	    
+	    public int next(int price) {
+			int span = 1;
+			while (!stack.isEmpty() && stack.peek().key <= price) {
+				pair prev = stack.pop();
+				span += prev.value;
+			}
+			stack.push(new pair(price, span));
+			return span;
+	    }
+	}
 }
