@@ -22,7 +22,7 @@ public class SlidingWindow {
 //		System.out.println();
 	}
 	
-	public static int findmaxAVG(int[] nums, int k) {
+	public static double findmaxAVG(int[] nums, int k) {
 		/*
 		 * 🧩 Problem:
 		 * 	Given an array of integers nums and an integer k, 
@@ -42,7 +42,7 @@ public class SlidingWindow {
 				maxSum = Math.max(sum, maxSum);
 			right++;
 		}
-		return maxSum / k;
+		return (double) maxSum / k;
 	}
 	
 	
