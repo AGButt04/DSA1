@@ -17,15 +17,71 @@ public class MonotonicStack {
 			System.out.print(n + " ");
 		}
 		System.out.println();
-		System.out.println(largestRectangleArea(heights));
-		StockSpanner stockSpanner = new StockSpanner();
-		stockSpanner.next(100); // return 1
-		stockSpanner.next(80);  // return 1
-		stockSpanner.next(60);  // return 1
-		stockSpanner.next(70);  // return 2
-		stockSpanner.next(60);  // return 1
-		stockSpanner.next(75);  // return 4
-		stockSpanner.next(85);  // return 6
+		String s = "(()";
+		System.out.println(longestValidParentheses(s));
+	}
+	
+	public static int longestValidParentheses(String s) {
+		/*
+		 * Leet-code 32 (Hard)
+		 */
+		/*
+		 * Here, we are finding the length of the longest valid
+		 * parenthesis substring, for that we have a Deque, that
+		 * will store the indices of the unmatched brackets(barriers), 
+		 * with the variable maxLength that tracks the max length found.
+		 */
+		Deque<Integer> st = new ArrayDeque<>();
+		int maxLength = 0;
+		for (int i = 0; i < s.length(); i++) {
+			/*
+			 * This loop check if the stack is empty and if the current 
+			 * character is a closing parenthesis or not, if it is, then we
+			 * see if the character that is at the top of the stack is opening
+			 * bracket, and else we just push the index of the character because
+			 * that means we haven't found a match of the unmatched character.
+			 */
+			char c = s.charAt(i);
+			if (!st.isEmpty() &&  c == ')' && s.charAt(st.peek()) == '(') {
+				/*
+				 * We pop the index, because it is matched now, and to calculate
+				 * the length of the string --> len = (current index - st.peek()),
+				 * because the stack's top now have the previous unmatched character
+				 * that is our boundary, from where our valid string starts from.
+				 */
+				st.pop();
+				int left = -1;
+				if (!st.isEmpty()) // If the stack is empty, we put -1 as the left boundary.
+					left = st.peek();
+				int len = i - left;
+				maxLength = Math.max(maxLength, len);
+			} else {
+				st.push(i);
+			}
+		}
+		// return the max length found so far.
+		return maxLength;
+	}
+	
+	public static int maximalRectangle(char[][] matrix) {
+		/*
+		 * Leet-code 85 (Hard)
+		 */
+		int[] heights = new int[matrix[0].length];
+		int maxArea = 0;
+		
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < heights.length; j++) {
+				if (matrix[i][j] == '1')
+					heights[j]++;
+				else
+					heights[j] = 0;
+			}
+			
+			int area = largestRectangleArea(heights);
+			maxArea = Math.max(maxArea, area);
+		}
+		return maxArea;
 	}
 	
 	public static String removeDuplicates(String s) {
