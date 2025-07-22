@@ -10,15 +10,88 @@ import java.util.Stack;
 public class MonotonicStack {
 
 	public static void main(String[] args) {
-		int[] nums1 = {5,4,3,2,1};
+		int[] nums = {2,3,3,1,2};
 		int[] heights = {2,1,5,6,2,3};
-		int[] result = nextGreaterElements(nums1);
-		for (int n : result) {
+		for (int n : nums) {
 			System.out.print(n + " ");
 		}
 		System.out.println();
 		String s = "(()";
-		System.out.println(longestValidParentheses(s));
+		System.out.println(maxSumMinProduct(nums));
+	}
+	
+	public static int maxSumMinProduct(int[] nums) {
+		/*
+		 * Leet-code 1856 (HARD)
+		 */
+		Deque<Integer> st = new ArrayDeque<>();
+		long[] sums = new long[nums.length + 1];
+		long minProduct = 0;
+		
+		for (int i = 0; i < nums.length; i++) {
+			sums[i+1] = sums[i] + nums[i];
+		}
+		
+		for (int i = 0; i < nums.length; i++) {
+			int n = nums[i];
+			while (!st.isEmpty() && nums[st.peek()] > n) {
+				int idx = st.pop();
+				int current = nums[idx]; //  This is the minimum of the range
+				int right = i;
+				int left = st.isEmpty()? -1 : st.peek();
+				
+				long sum = sums[right] - sums[left+1];
+				long prod = sum * current;
+				minProduct = Math.max(minProduct, prod);
+			}
+			st.push(i);
+		}
+		
+		while (!st.isEmpty()) {
+		    int idx = st.pop();
+		    int current = nums[idx];
+		    int right = nums.length;  // Use array length as right boundary
+		    int left = st.isEmpty() ? -1 : st.peek();
+		    
+		    long sum = sums[right] - sums[left + 1];
+		    long prod = sum * current;
+		    minProduct = Math.max(minProduct, prod);
+		}
+		
+		return (int) (minProduct % 1000000007);
+	}
+	
+	public static int maxWidthRamp(int[] nums) {
+		/*
+		 * Leet-code 962 (Medium)
+		 */
+		/*
+		 * Using two-pass approach where first pass will
+		 * push the indexes in the decreasing order on the stack
+		 * and second approach will calculate the width of the ramp.
+		 */
+		Deque<Integer> st = new ArrayDeque<>();
+		int maxWidth = 0;
+		
+		for (int i = 0; i < nums.length; i++) {
+			// If stack is empty (First iteration) OR the element
+			// on the top of stack is less than current, push the index.
+			if (st.isEmpty() || nums[st.peek()] > nums[i])
+				st.push(i);
+		}
+		// This loop starts from the end and check the width of each number.
+		for (int j = nums.length-1; j >= 0; j--) {
+			/*
+			 * This loop will keep popping the indexes off of the stack while
+			 * the nums element at the top is less or equal to the current element.
+			 */
+			while (!st.isEmpty() && nums[st.peek()] <= nums[j]) {
+				// We pop the index and that would be our width.
+				int i = st.pop();
+				maxWidth = Math.max(maxWidth, j - i);
+			}
+		}
+		return maxWidth;
 	}
 	
 	public static int longestValidParentheses(String s) {
