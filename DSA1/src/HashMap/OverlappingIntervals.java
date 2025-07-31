@@ -3,20 +3,117 @@ package HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class OverlappingIntervals {
 
 	public static void main(String[] args) {
-		int[][] intervals = {{1,2},{3,5},{6,7},{8,10},{12,16}};
-		int[] intervals2 = {4,8};
-//		System.out.println(eraseOverlapIntervals(intervals));
-		int[][] ranges = insert(intervals, intervals2);
+		int[][] intervals = {{1,3},{2,6},{8,10},{15,18}};
+		int[][] intervals2 = {{7,10},{2,4}};
+//		System.out.println(meetingRooms2(intervals));
+		int[][] ranges = mergeIntervals(intervals);
 		for (int[] s : ranges) {
 			for (int i : s) {
 				System.out.print(i + " ");
 			}
 			System.out.println();
 		}
+	}
+	
+	public static int[][] mergeIntervals(int[][] intervals) {
+		/*
+		 * Leet-code 56 (Medium)
+		 */
+		/*
+		 * In this problem, we are merging all the intervals of the
+		 * intervals array that is given, and adding them into the
+		 * new array. We will need an index variable where we will
+		 * add the current valid interval, and we will sort the intervals
+		 * by their starting positions, and that would help in overlap check.
+		 * We also need a current_merge interval that is in need of merging
+		 * and we will check each current interval with this one for overlap.
+		 */
+		int[][] result = new int[intervals.length][2];
+		int index = 0;
+		Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+		int[] current_merge = intervals[0];
+		
+		for (int i = 1; i < intervals.length; i++) {
+			/*
+			 * To check the overlap, we need the current interval and the
+			 * end, start of current interval and merge one, respectively.
+			 */
+			int[] current_int = intervals[i];
+			int end1 = current_merge[1];
+			int start2 = current_int[0], end2 = current_int[1];
+				
+			/*
+			 * This condition check if the end time of merging interval is 
+			 * greater than the start time of current interval, there's a overlap.
+			 */
+			if (end1 >= start2) {
+				// We update our current merge with the new merged and don't add anything.
+				current_merge[1] = Math.max(end1, end2);
+			} else {
+				/*
+				 * If there is no overlap, then we can add our merged one because it would
+				 * go first as the intervals are sorted, and then once we're done with this
+				 * interval, we can update our current_merge with the current_int because
+				 * this is gonna be the one we will be checking with future intervals for overlap.
+				 */
+				result[index++] = current_merge;
+				current_merge = current_int;
+			}
+		}
+		
+		// In-case, we got out of the loop, we still have to add the last interval.
+		result[index++] = current_merge;
+		
+		return Arrays.copyOf(result, index);
+	}
+	
+	public static int meetingRooms2(int[][] intervals) {
+		/*
+		 * Leet-code 253 (Medium)
+		 */
+		/*
+		 * This problem says return minimum number of meeting rooms.
+		 * We can use min-heap here to keep track of the end times of
+		 * the intervals in order to check the overlap, as we will sort
+		 * the intervals with respect to their starting times, we don't
+		 * need to check them to check the overlap.
+		 */
+		PriorityQueue<Integer> minheap = new PriorityQueue<Integer>();
+		Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+		int rooms = 0;
+		
+		for (int[] interval : intervals) {
+			/*
+			 * Here, we are looping over all the intervals, and have another
+			 * while loop, that will keep on running till the top end time
+			 * of the heap is less than the current interval's start time
+			 * because that indicates that previous meeting rooms session
+			 * has ended and we just remove them from the heap.
+			 */
+			while (!minheap.isEmpty() && minheap.peek() <= interval[0]) {
+				/*
+				 * The heap is keeping track of the active meeting rooms
+				 * of which we have not find any start time bigger than
+				 * their end times, that would say meeting's over.
+				 */
+				minheap.poll();
+			}
+			
+			/*
+			 * At each iteration we add the end time to the min-heap, and update
+			 * the rooms using max of current rooms we have and min-heap size,
+			 * because min-heap has all the overlapping intervals which need
+			 * their own separate rooms so that would be the min rooms needed.
+			 */
+			minheap.add(interval[1]);
+			rooms = Math.max(rooms, minheap.size());	
+		}
+		return rooms;
 	}
 	
 	public static int[][] insert(int[][] intervals, int[] newInterval) {
