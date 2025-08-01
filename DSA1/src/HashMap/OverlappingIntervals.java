@@ -10,8 +10,11 @@ public class OverlappingIntervals {
 	public static void main(String[] args) {
 		int[][] intervals = {{10,16},{2,8},{1,6},{7,12}};
 		int[][] intervals2 = {{1,5},{8,12},{15,24},{25,26}};
-		int[][] points = {{-2147483646,-2147483645},{2147483646,2147483647}};
-		System.out.println(findMinArrowShots(points));
+		int[] arr = {900, 940, 950, 1100, 1500, 1800};
+		int[] dep = {910, 1200, 1120, 1130, 1900, 2000};
+		int[] arr1 = {900, 1100, 1235};
+		int[] dep1 = {1000, 1200, 1240};
+		System.out.println(minPlatforms(arr, dep));
 //		int[][] ranges = intervalIntersection(intervals, intervals2);
 //		for (int[] s : ranges) {
 //			for (int i : s) {
@@ -19,6 +22,46 @@ public class OverlappingIntervals {
 //			}
 //			System.out.println();
 //		}
+	}
+	
+	public static int minPlatforms(int[] arr, int[] dep) {
+		/*
+		 * Bonus interview problem:
+		 * Given arrival and departure times of all trains that reach a railway station.
+		 * Find the minimum number of platforms required for the railway station so that no train waits
+		 */
+		/*
+		 * The approach here is we will check each train's arrival time with
+		 * the departure time of previous trains, if they overlap, we need another
+		 * platform, if they don't we don't need one more platform. Min-heap will
+		 * have the departure times of the trains who are currently on open platforms
+		 * and we will check if the new train's arrival is greater than the previous 
+		 * train's departure and keep on popping the trains and adding new departure times.
+		 */
+		PriorityQueue<Integer> departures = new PriorityQueue<>();
+		int platforms = 0;
+		departures.offer(dep[0]);
+		for (int i = 1; i < arr.length; i++) {
+			int next_arrival = arr[i];
+			int curr_departure = dep[i];
+			/*
+			 * Checking each new arrival with the top of heap and keep on
+			 * popping the heap while the departures are less than new arrival.
+			 */
+			while (!departures.isEmpty() && departures.peek() <= next_arrival) {
+				departures.poll();
+			}
+			/*
+			 * Add each departure on the heap considering the current train has 
+			 * occupied this platform, and our platform count will be the max of 
+			 * current count and the size of heap as heap indicates the number of 
+			 * platforms that are required as all departure times are overlapping.
+			 */
+			departures.offer(curr_departure);
+			platforms = Math.max(platforms, departures.size());
+		}
+		
+		return platforms;
 	}
 	
 	public static int findMinArrowShots(int[][] points) {
