@@ -8,16 +8,64 @@ import java.util.PriorityQueue;
 public class OverlappingIntervals {
 
 	public static void main(String[] args) {
-		int[][] intervals = {{1,3},{2,6},{8,10},{15,18}};
-		int[][] intervals2 = {{7,10},{2,4}};
-//		System.out.println(meetingRooms2(intervals));
-		int[][] ranges = mergeIntervals(intervals);
-		for (int[] s : ranges) {
-			for (int i : s) {
-				System.out.print(i + " ");
+		int[][] intervals = {{10,16},{2,8},{1,6},{7,12}};
+		int[][] intervals2 = {{1,5},{8,12},{15,24},{25,26}};
+		int[][] points = {{-2147483646,-2147483645},{2147483646,2147483647}};
+		System.out.println(findMinArrowShots(points));
+//		int[][] ranges = intervalIntersection(intervals, intervals2);
+//		for (int[] s : ranges) {
+//			for (int i : s) {
+//				System.out.print(i + " ");
+//			}
+//			System.out.println();
+//		}
+	}
+	
+	public static int findMinArrowShots(int[][] points) {
+		/*
+		 * Leet-code 452 (Medium)
+		 */
+		if (points.length == 0) return 0;
+		
+        Arrays.sort(points, (a,b) -> Integer.compare(a[1], b[1]));
+		int arrows = 1;
+		int lastShot = points[0][1];
+
+		for (int i = 1; i < points.length; ++i) {
+            int[] point = points[i];
+            
+			if (point[0] > lastShot) {
+				arrows++;
+				lastShot = point[1];
 			}
-			System.out.println();
 		}
+		return arrows;
+    }
+	
+	public static int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+		/*
+		 * Leet-code 986 (Medium)
+		 */
+		List<int[]> intersections = new ArrayList<int[]>();
+		int first_ind = 0, second_ind = 0;
+		while (first_ind < firstList.length && second_ind < secondList.length) {
+			int[] first = firstList[first_ind];
+			int[] second = secondList[second_ind];
+			
+			int start = Math.max(first[0], second[0]);
+			int end = Math.min(first[1], second[1]);
+			
+			if (start <= end) {
+				intersections.add(new int[]{start, end});
+			}
+			
+			if (first[1] < second[1])
+				first_ind++;
+			else
+				second_ind++;
+			
+		}
+		return  intersections.toArray(new int[intersections.size()][]);
 	}
 	
 	public static int[][] mergeIntervals(int[][] intervals) {
