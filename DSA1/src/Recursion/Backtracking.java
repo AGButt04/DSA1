@@ -15,6 +15,8 @@ public class Backtracking {
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
         /*
         Leet-code 39
+        In this problem, generate all possible combinations from the
+        candidates array that sum upto to the target value.
          */
         List<List<Integer>> combinations = new ArrayList<>();
         backtrack(combinations, candidates, target, new ArrayList<>(), 0, 0);
