@@ -24,39 +24,55 @@ public class Backtracking {
     }
     public void backtrack(List<List<Integer>> combinations, int[] candidates, int target,
                           ArrayList<Integer> current, int current_sum, int index) {
-        if (current_sum == target) {
-            combinations.add(new ArrayList<>(current));
-            return;
+        if (current_sum == target) { // If the current running sum == target
+            combinations.add(new ArrayList<>(current)); // We add the current combination to our 2D List.
+            return; // Return after adding.
         }
-        if (current_sum > target)
+        if (current_sum > target) // If our current_sum became greater, then we don't recurse further.
             return;
 
         for (int i = index; i < candidates.length; i++) {
+            /*
+            For the duplication sake, we will start the loop from a start index which
+            will only move forwards, that will make sure of no duplicates. We will add
+            the current element to the combination and recurse further with the new
+            running sum, and index will be i as any number can be used unlimited.
+             */
             int next = candidates[i];
             current.add(next);
             backtrack(combinations, candidates, target, current, current_sum + next, i);
+            // After the previous call returns we will remove the current element to backtrack.
             current.remove(current.size()-1);
         }
-
     }
 
     public List<List<Integer>> permute(int[] nums) {
         /*
         Leet-code 46 (Medium)
+        This problem is similar to the subsets or combinations problem, where
+        we will generate all permutations which are just unique combinations.
          */
         List<List<Integer>> permutations = new ArrayList<>();
         backtrack(permutations, new ArrayList<>(), nums);
         return permutations;
     }
     public void backtrack(List<List<Integer>> permutations, ArrayList<Integer> current, int[] nums) {
-        if (current.size() == nums.length) {
+        if (current.size() == nums.length) { // If current combination's size == length of array
+            // We found the permutation and we add it to our 2D list.
             permutations.add(new ArrayList<>(current));
-            return;
+            return; // return after that.
         }
 
+        // The inner process will be performed for each of the element in the array.
         for (int i = 0; i < nums.length; i++) {
             int curr = nums[i];
             if (!current.contains(curr)) {
+                /*
+                If our permutation does not include the current element,
+                then we add it to the current one and recurse with the
+                current element further, and after the calls returns,
+                we have to remove the current element in order to backtrack
+                 */
                 current.add(curr);
                 backtrack(permutations, current, nums);
                 current.remove(current.size()-1);
