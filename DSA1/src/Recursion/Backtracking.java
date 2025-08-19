@@ -12,6 +12,56 @@ public class Backtracking {
         }
     }
 
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        /*
+        Leet-code 39
+         */
+        List<List<Integer>> combinations = new ArrayList<>();
+        backtrack(combinations, candidates, target, new ArrayList<>(), 0, 0);
+        return combinations;
+    }
+    public void backtrack(List<List<Integer>> combinations, int[] candidates, int target,
+                          ArrayList<Integer> current, int current_sum, int index) {
+        if (current_sum == target) {
+            combinations.add(new ArrayList<>(current));
+            return;
+        }
+        if (current_sum > target)
+            return;
+
+        for (int i = index; i < candidates.length; i++) {
+            int next = candidates[i];
+            current.add(next);
+            backtrack(combinations, candidates, target, current, current_sum + next, i);
+            current.remove(current.size()-1);
+        }
+
+    }
+
+    public List<List<Integer>> permute(int[] nums) {
+        /*
+        Leet-code 46 (Medium)
+         */
+        List<List<Integer>> permutations = new ArrayList<>();
+        backtrack(permutations, new ArrayList<>(), nums);
+        return permutations;
+    }
+    public void backtrack(List<List<Integer>> permutations, ArrayList<Integer> current, int[] nums) {
+        if (current.size() == nums.length) {
+            permutations.add(new ArrayList<>(current));
+            return;
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            int curr = nums[i];
+            if (!current.contains(curr)) {
+                current.add(curr);
+                backtrack(permutations, current, nums);
+                current.remove(current.size()-1);
+            }
+        }
+    }
+
     public List<List<Integer>> subsets(int[] nums) {
         /*
         Leet-code 78
