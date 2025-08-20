@@ -1,6 +1,7 @@
 package Recursion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Backtracking {
@@ -19,13 +20,68 @@ public class Backtracking {
 
     }
 
+    public List<List<String>> partition(String s) {
+        /*
+        Leet-code 131
+         */
+        if  (s == null || s.length() == 0) return new ArrayList<>();
+        List<List<String>> partitions = new ArrayList<>();
+        backtrackPartition(partitions, new ArrayList<String>(), s, 0);
+        return partitions;
+    }
+    public void backtrackPartition(List<List<String>> partitions, List<String> list, String s, int start){
+        if (start == s.length()){
+            partitions.add(new ArrayList<>(list));
+            return;
+        }
+        for (int end = start+1; end < s.length(); end++){
+            String substring = s.substring(start, end);
+            if (isPalindrome(substring)) {
+                list.add(substring);
+                backtrackPartition(partitions, list, s, end);
+                list.remove(list.size()-1);
+            }
+        }
+    }
+    public boolean isPalindrome(String s){
+        int left = 0;
+        int right = s.length()-1;
+        while (left < right){
+            if (s.charAt(left) != s.charAt(right)){
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        /*
+        Leet-code 90 (Medium)
+         */
+        List<List<Integer>> subsets = new ArrayList<>();
+        Arrays.sort(nums);
+        backtrackSubsets(subsets, new ArrayList<Integer>(), nums, 0);
+        return subsets;
+    }
+    public static void backtrackSubsets(List<List<Integer>> subsets, List<Integer> list, int[] nums, int index){
+        subsets.add(new ArrayList<>(list));
+        for (int i = index; i < nums.length; i++) {
+            if (i > index && nums[i] == nums[i - 1]) continue;
+            list.add(nums[i]);
+            backtrackSubsets(subsets, list, nums, i + 1);
+            list.remove(list.size() - 1);
+        }
+    }
+
     public static boolean exist(char[][] board, String word) {
         /*
         Leet-code 79 (Medium)
         */
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
-                if (backtrack(board, word, i, j, 0)) 
+                if (backtrack(board, word, i, j, 0))
                     return true;
             }
         }
@@ -97,10 +153,10 @@ public class Backtracking {
         candidates array that sum upto to the target value.
          */
         List<List<Integer>> combinations = new ArrayList<>();
-        backtrack(combinations, candidates, target, new ArrayList<>(), 0, 0);
+        backtrackSum(combinations, candidates, target, new ArrayList<>(), 0, 0);
         return combinations;
     }
-    public void backtrack(List<List<Integer>> combinations, int[] candidates, int target,
+    public void backtrackSum(List<List<Integer>> combinations, int[] candidates, int target,
                           ArrayList<Integer> current, int current_sum, int index) {
         if (current_sum == target) { // If the current running sum == target
             combinations.add(new ArrayList<>(current)); // We add the current combination to our 2D List.
@@ -118,7 +174,7 @@ public class Backtracking {
              */
             int next = candidates[i];
             current.add(next);
-            backtrack(combinations, candidates, target, current, current_sum + next, i);
+            backtrackSum(combinations, candidates, target, current, current_sum + next, i);
             // After the previous call returns we will remove the current element to backtrack.
             current.remove(current.size()-1);
         }
@@ -131,10 +187,10 @@ public class Backtracking {
         we will generate all permutations which are just unique combinations.
          */
         List<List<Integer>> permutations = new ArrayList<>();
-        backtrack(permutations, new ArrayList<>(), nums);
+        backtrackPermute(permutations, new ArrayList<>(), nums);
         return permutations;
     }
-    public void backtrack(List<List<Integer>> permutations, ArrayList<Integer> current, int[] nums) {
+    public void backtrackPermute(List<List<Integer>> permutations, ArrayList<Integer> current, int[] nums) {
         if (current.size() == nums.length) { // If current combination's size == length of array
             // We found the permutation and we add it to our 2D list.
             permutations.add(new ArrayList<>(current));
@@ -152,7 +208,7 @@ public class Backtracking {
                 we have to remove the current element in order to backtrack
                  */
                 current.add(curr);
-                backtrack(permutations, current, nums);
+                backtrackPermute(permutations, current, nums);
                 current.remove(current.size()-1);
             }
         }
@@ -165,10 +221,10 @@ public class Backtracking {
         generate all the possible subetts of the given set.
          */
         List<List<Integer>> subsets = new ArrayList<>();
-        backtrack(subsets, nums,  0, new ArrayList<Integer>());
+        backtrackSubs(subsets, nums,  0, new ArrayList<Integer>());
         return subsets;
     }
-    public void backtrack(List<List<Integer>> subsets, int[] nums, int index, List<Integer> curr_set) {
+    public void backtrackSubs(List<List<Integer>> subsets, int[] nums, int index, List<Integer> curr_set) {
         // Every state of the set is a valid subset, so we add it at each iteration.
         subsets.add(new ArrayList<>(curr_set));
         /*
@@ -178,7 +234,7 @@ public class Backtracking {
          */
         for (int i = index; i < nums.length; i++) {
             curr_set.add(nums[i]); // Add the current element to our current set.
-            backtrack(subsets, nums, i + 1, curr_set); // Recurse with this set to find other subsets.
+            backtrackSubs(subsets, nums, i + 1, curr_set); // Recurse with this set to find other subsets.
             curr_set.remove(curr_set.size()-1); // remove the element added from the set for future processings.
         }
     }
@@ -196,21 +252,21 @@ public class Backtracking {
         n * 2, then that means we have a valid string of parenthesis.
          */
         List<String> res = new ArrayList<String>();
-        backtrack(res, "", 0, 0, n);
+        backtrackParenthesis(res, "", 0, 0, n);
         return res;
     }
-    public static void backtrack(List<String> res, String str, int open, int close, int n) {
+    public static void backtrackParenthesis(List<String> res, String str, int open, int close, int n) {
         if (str.length() == n * 2) {
             res.add(str);
             return;
         }
         // If "(" count is less than n, we can add the "(" to our string
         if (open < n) {
-            backtrack(res, str + "(", open + 1, close, n);
+            backtrackParenthesis(res, str + "(", open + 1, close, n);
         }
         // If ")" count is less than open, then we can add the "(" to our string
         if (close < open) {
-            backtrack(res, str + ")", open, close + 1, n);
+            backtrackParenthesis(res, str + ")", open, close + 1, n);
         }
     }
 }
