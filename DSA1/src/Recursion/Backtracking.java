@@ -10,6 +10,54 @@ public class Backtracking {
         for (String s : list){
             System.out.println(s);
         }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Generated Parentheses: ");
+        for (String s : list) {
+            sb.append(s).append(", ");
+        }
+        System.out.println(sb.toString());
+
+    }
+
+    public List<String> letterCombinations(String digits) {
+        /*
+        Leet-code 17 (Medium)
+        */
+        if (digits.equals("")) return new ArrayList<>();
+        
+        List<String> combinations = new ArrayList<>();
+        HashMap<Character, String> mappings = map();
+        backtrack(combinations, mappings, new StringBuilder(), digits, 0);
+        return combinations;
+    }
+    public void backtrack(List<String> combinations, HashMap<Character, String> mappings,
+                         StringBuilder current, String digits, int index) {
+        if (current.length() == digits.length()) {
+            combinations.add(current.toString());
+            return;
+        }
+
+        for (int i = index; i < digits.length(); i++) {
+            char ch = digits.charAt(i);
+            String mapping = mappings.get(ch);
+            for (char c : mapping.toCharArray()) {
+                current.append(c);
+                backtrack(combinations, mappings, current, digits, i+1);
+                current.deleteCharAt(current.length()-1);
+            }
+        }
+    }
+    public HashMap<Character, String> map() {
+        HashMap<Character, String> mappings = new HashMap<>();
+        mappings.put('2', "abc");
+        mappings.put('3', "def");
+        mappings.put('4', "ghi");
+        mappings.put('5', "jkl");
+        mappings.put('6', "mno");
+        mappings.put('7', "pqrs");
+        mappings.put('8', "tuv");
+        mappings.put('9', "wxyz");
+        return mappings;
     }
 
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
