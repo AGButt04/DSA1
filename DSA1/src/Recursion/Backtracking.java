@@ -7,18 +7,58 @@ import java.util.List;
 
 public class Backtracking {
     public static void main(String[] args) {
-        int n = 3;
-        List<String> list = generateParenthesis(n);
-        for (String s : list){
-            System.out.println(s);
+        int n = 4;
+        List<List<String>> arr = solveNQueens(n);
+        for (List<String> row : arr) {
+            for (String col : row) {
+                System.out.print(col + ", ");
+            }
+            System.out.println();
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("Generated Parentheses: ");
-        for (String s : list) {
-            sb.append(s).append(", ");
-        }
-        System.out.println(sb.toString());
+    }
 
+    public static List<List<String>> solveNQueens(int n) {
+        List<List<String>> result = new ArrayList<>();
+        int[][] grid = new int[n][n];
+        backtrackingQueens(result, grid, 0, n);
+        return result;
+    }
+    public static void backtrackingQueens(List<List<String>> result, int[][] grid, int row, int n) {
+        if (row == n) {
+            ArrayList<String> temp = new ArrayList<>();
+            for (int[] r : grid) {
+                String s = "";
+                for (int col : r) {
+                    if (col == 0)
+                        s += ".";
+                    else
+                        s += "Q";
+                }
+                temp.add(s);
+            }
+            result.add(temp);
+        }
+        for  (int col = 0; col < n; col++) {
+            if (!underattack(grid, row, col)) {
+                grid[row][col] = 1;
+                backtrackingQueens(result, grid, row + 1, n);
+                grid[row][col] = 0;
+            }
+        }
+    }
+    public static boolean underattack(int[][] grid, int row, int col) {
+        int[][] directions = {{-1, -1}, {-1, 1}, {-1, 0}};
+
+        for  (int[] direction : directions) {
+            int x = row + direction[0];
+            int y = col + direction[1];
+            while(x >= 0 && x <  grid.length && y >= 0 && y < grid[0].length) {
+                if (grid[x][y] != 0) return true;
+                x += direction[0];
+                y += direction[1];
+            }
+        }
+        return false;
     }
 
     public List<List<String>> partition(String s) {
