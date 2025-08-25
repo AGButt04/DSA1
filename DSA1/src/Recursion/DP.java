@@ -12,6 +12,9 @@ public class DP {
     }
 
     public int longestCommonSubsequence(String text1, String text2) {
+        /*
+        Leet-code 1143 (Medium)
+         */
         int m = text1.length(), n = text2.length();
         int[][] LCS = new int[m + 1][n + 1];
 
