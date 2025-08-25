@@ -11,6 +11,34 @@ public class DP {
         System.out.println(climbStairs_Tab(5));
     }
 
+    public static int maxSubarraySum(int[] nums) {
+        /*
+        Leet-code 53 (Medium)
+        In this problem, we can use tabulation straight up recursive solution
+        is going to be pretty critical. Here, we can make an dp array which will
+        store the maximum subarray sums ending at the position i.
+         */
+        int[] maxSums  = new int[nums.length]; // Create a dp array where sums will be stored
+        maxSums[0] = nums[0]; // Base case is the first element of the nums array
+        int maxSum = nums[0]; // maxSum to keep track of the max of the dp array
+
+        for (int i = 1; i < nums.length; i++) {
+            /*
+            The main logic is that at each position, we have two choices to
+            make. One would to keep the running sum and just add the current
+            element to it, or we can start the new running sum from nums[i].
+            Of course, we will take the max value of both as that's the goal.
+             */
+            int prev_max_sum = maxSums[i - 1] +  nums[i]; // Add the nums[i] to previous max
+            int next_max_sum = Math.max(prev_max_sum, nums[i]); // Max of current value alone and running sum
+
+            // Put the bigger sum at the current index.
+            maxSums[i] = next_max_sum;
+            maxSum = Math.max(maxSum, next_max_sum); // Updating the maxSum at each iteration.
+        }
+        return maxSum;
+    }
+
     public int longestCommonSubsequence(String text1, String text2) {
         /*
         Leet-code 1143 (Medium)
